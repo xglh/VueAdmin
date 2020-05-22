@@ -26,7 +26,7 @@
     <el-table
       :key="tableKey"
       v-loading="listLoading"
-      :data="roleList"
+      :data="userInfoList"
       border
       fit
       highlight-current-row
@@ -46,12 +46,14 @@
         width="55"
       />
 
-      <el-table-column prop="roleName" label="角色" width="200px" min-width="100px" align="left" sortable />
-      <el-table-column prop="remark" label="备注" min-width="100px" />
+      <el-table-column prop="username" label="用户名" width="200px" min-width="100px" align="left" sortable />
+      <el-table-column prop="role" label="角色" width="200px" min-width="100px" align="left" sortable />
+      <el-table-column prop="phone" label="手机" min-width="100px" />
+      <el-table-column prop="email" label="邮箱" min-width="100px" />
       <el-table-column label="操作" align="center" width="300px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" style="width: 70px;text-align: center" @click="handleRoleUpdate(row)">
-            编辑角色
+            编辑
           </el-button>
           <el-button type="danger" size="mini" @click="handleRoleDelete(row)">删除</el-button>
         </template>
@@ -75,10 +77,26 @@
 </template>
 
 <script>
-import UserRoleinfoEditDialog from './components/user-roleinfo-dialog'
+import { getUsers } from '@/api/user'
+import UserRoleinfoEditDialog from './components/user-info-dialog'
+
 export default {
   name: 'UserAccount',
-  components: { UserRoleinfoEditDialog }
+  components: { UserRoleinfoEditDialog },
+  data() {
+    return {
+      userInfoList: this.getUserInfoList()
+    }
+  },
+  methods: {
+    getUserInfoList() {
+      getUsers().then(response => {
+        const res = response.data
+        const userInfoList = res.data
+        return userInfoList
+      })
+    }
+  }
 }
 </script>
 

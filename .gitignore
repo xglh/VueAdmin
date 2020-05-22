@@ -1,0 +1,5 @@
+*.idea/
+*.pyc
+migrations/
+node_modules/
+*.sqlite3

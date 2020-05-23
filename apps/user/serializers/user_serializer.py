@@ -74,7 +74,7 @@ class SysUserInfoSerializer(serializers.ModelSerializer):
     用户信息序列化
     '''
     username = serializers.CharField(max_length=255, allow_blank=True, required=False)
-    role = serializers.CharField(max_length=255, allow_blank=True, required=False)
+    roles = serializers.SerializerMethodField()
     email = serializers.CharField(max_length=255, allow_blank=True, required=False)
     phone = serializers.CharField(max_length=255, allow_blank=True, required=False)
     avatar = serializers.CharField(max_length=255, allow_blank=True, required=False)
@@ -82,4 +82,7 @@ class SysUserInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SysUser
-        fields = ('username', 'role', 'email', 'phone', 'role', 'avatar', 'nick_name')
+        fields = ('username', 'email', 'phone', 'roles', 'avatar', 'nick_name')
+
+    def get_roles(self, obj):
+        return [obj.role]

@@ -44,20 +44,19 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getUserInfo(state.name).then(response => {
+      getUserInfo(state.username).then(response => {
         const { data } = response
 
         if (!data) {
           reject('Verification failed, please Login again.')
         }
 
-        const { roles, avatar } = data
-
+        const { username, roles, avatar } = data
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
-
+        commit('SET_USERNAME', username)
         commit('SET_ROLES', roles)
         commit('SET_AVATAR', avatar)
         resolve(data)
@@ -106,7 +105,6 @@ const actions = {
       setToken(token)
 
       const { roles } = await dispatch('getInfo')
-
       resetRouter()
 
       // generate accessible routes map based on roles

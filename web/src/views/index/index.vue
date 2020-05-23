@@ -14,7 +14,7 @@ export default {
   },
   methods: {
     getUserName() {
-      return this.$store.getters.name
+      return this.$store.getters.username
     }
 
   }

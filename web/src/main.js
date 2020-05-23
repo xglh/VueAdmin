@@ -29,7 +29,7 @@ import * as filters from './filters' // global filters
  * please remove it before going online ! ! !
  */
 console.log('process.env.NODE_ENV', process.env.NODE_ENV)
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV !== 'development') {
   const { mockXHR } = require('../mock')
   mockXHR()
 }

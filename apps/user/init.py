@@ -24,5 +24,5 @@ from django.contrib.auth.hashers import make_password,check_password
 
 admin_user = SysUser.objects.create(username='admin', password=make_password('admin2020'),
                                     role='admin')
-admin_user = SysUser.objects.get(username='admin')
-print(check_password('admin2020',admin_user.password))
+# admin_user = SysUser.objects.get(username='admin')
+# print(check_password('admin2020',admin_user.password))

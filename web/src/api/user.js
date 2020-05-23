@@ -17,16 +17,45 @@ export function getUsers() {
   })
 }
 
+// 获取用户信息
 export function getUserInfo(username) {
   return request({
-    url: '/api/user/user' + username,
+    url: '/api/user/user/' + username,
     method: 'get'
   })
 }
 
+// 新增用户
+export function createUser(data) {
+  return request({
+    url: '/api/user/user',
+    method: 'post',
+    data
+  })
+}
+
+// 修改用户信息
+export function updateUserInfo(data) {
+  return request({
+    url: '/api/user/user',
+    method: 'put',
+    data
+  })
+}
+
+// 删除用户
+export function deleteUser(userName) {
+  return request({
+    url: '/api/user/user/' + userName,
+    method: 'detele'
+  })
+}
+
+// 用户登出
 export function logout() {
   return request({
     url: '/api/user/logout',
     method: 'post'
   })
 }
+

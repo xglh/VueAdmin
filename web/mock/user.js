@@ -1,47 +1,16 @@
-
-const tokens = {
-  admin: {
-    token: 'admin-token'
-  },
-  editor: {
-    token: 'editor-token'
-  }
-}
-
-const users = {
-  'admin-token': {
-    roles: ['admin'],
-    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-    username: 'Super Admin'
-  },
-  'editor-token': {
-    roles: ['editor'],
-    introduction: 'I am an editor',
-    avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-    username: 'Normal Editor'
-  }
-}
-
 export default [
   // user login
   {
     url: '/api/user/login',
     type: 'post',
     response: config => {
-      const { username } = config.body
-      const token = tokens[username]
-
-      // mock error
-      if (!token) {
-        return {
-          code: 60204,
-          message: 'Account and password are incorrect.'
-        }
-      }
-
       return {
-        code: 20000,
-        data: token
+        code: 200,
+        success: true,
+        message: 'success',
+        data: {
+          token: 'c5c50929ba89b241e69b86c65cbf9e1e366abdbc'
+        }
       }
     }
   },
@@ -51,19 +20,23 @@ export default [
     url: '/api/user/users',
     type: 'get',
     response: config => {
-      const info = users['admin-token']
-
-      // mock error
-      if (!info) {
-        return {
-          code: 50008,
-          message: 'Login failed, unable to get user details.'
-        }
-      }
-
       return {
-        code: 20000,
-        data: info
+        code: 200,
+        success: true,
+        message: 'success',
+        data: {
+          total: 1,
+          rows: [
+            {
+              roles: ['admin'],
+              avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+              username: 'admin',
+              email: '131863361@qq.com',
+              phone: '13242034299',
+              nickName: '刘辉'
+            }
+          ]
+        }
       }
     }
   },
@@ -72,19 +45,18 @@ export default [
     url: '/api/user/user\.*',
     type: 'get',
     response: config => {
-      const info = users['admin-token']
-
-      // mock error
-      if (!info) {
-        return {
-          code: 50008,
-          message: 'Login failed, unable to get user details.'
-        }
-      }
-
       return {
-        code: 20000,
-        data: info
+        code: 200,
+        success: true,
+        message: 'success',
+        data: {
+          roles: ['admin'],
+          avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+          username: 'admin',
+          email: '131863361@qq.com',
+          phone: '13242034299',
+          nickName: '刘辉'
+        }
       }
     }
   },
@@ -94,7 +66,7 @@ export default [
     type: 'post',
     response: _ => {
       return {
-        code: 20000,
+        code: 200,
         data: 'success'
       }
     }

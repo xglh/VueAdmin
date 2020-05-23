@@ -59,7 +59,7 @@ class UserLoginView(ObtainAuthToken):
                         err_msg += "{}:{}".format(error_key, "".join(serializer.errors[error_key]))
                 except Exception:
                     err_msg = "获取token失败"
-                response.set_error_response(code=401, message=err_msg)
+                response.set_error_response(code=400, message=err_msg)
         except Exception as e:
             response.set_http_500_response(message=str(e), data=[])
             logger.error(traceback.format_exc())

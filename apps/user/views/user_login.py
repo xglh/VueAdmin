@@ -4,6 +4,7 @@
 # @Author  : liuhui
 # @Detail  : 登录&退出view
 
+import re
 import logging
 import traceback
 from rest_framework.views import APIView
@@ -16,6 +17,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from VueAdmin.base import BaseResponse
+from rest_framework import HTTP_HEADER_ENCODING
 
 # token过期时间
 EXPIRE_MINUTES = settings.REST_FRAMEWORK_TOKEN_EXPIRE_MINUTES
@@ -51,32 +53,52 @@ class UserLoginView(ObtainAuthToken):
                         token.save()
                 response.data = {'token': token.key}
             else:
-                response.success = False
                 err_msg = ""
                 try:
                     for error_key in serializer.errors:
                         err_msg += "{}:{}".format(error_key, "".join(serializer.errors[error_key]))
                 except Exception:
                     err_msg = "获取token失败"
-                response.message = err_msg
+                response.set_error_response(code=401, message=err_msg)
         except Exception as e:
             response.set_http_500_response(message=str(e), data=[])
             logger.error(traceback.format_exc())
         return Response(response.to_json())
 
 
+# 获取请求头里的token信息
+def get_authorization_header(request):
+    """
+    Return request's 'Authorization:' header, as a bytestring.
+
+    Hide some test client ickyness where the header can be unicode.
+    """
+    has_token, token = False, ''
+    auth = request.META.get('HTTP_AUTHORIZATION', b'')
+    if isinstance(auth, type('')):
+        # Work around django test client oddness
+        auth = auth.encode(HTTP_HEADER_ENCODING)
+
+    auth_str = str(auth, encoding='utf-8')
+    # 解析token
+    p = re.compile('Token\s*(\S*)')
+    f = p.findall(auth_str)
+    if len(f) > 0:
+        has_token = True
+        token = f[0]
+    return has_token, token
+
+
 class UserLogoutView(APIView):
 
-    def post(self, request):
+    def put(self, request):
         response = BaseResponse()
         try:
-            body = request.data
-            try:
-                token = body['token']
-            except KeyError:
-                response.set_error_response(code=400, message='参数校验失败')
-            else:
+            has_token, token = get_authorization_header(request)
+            if has_token:
                 Token.objects.filter(key=token).delete()
+            else:
+                response.set_error_response(code=401, message='缺少token信息')
         except Exception as e:
             response.set_http_500_response(message=str(e))
             logger.error(traceback.format_exc())

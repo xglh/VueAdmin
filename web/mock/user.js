@@ -52,8 +52,7 @@ export default [
     url: '/api/user/users',
     type: 'get',
     response: config => {
-      const { token } = config.query
-      const info = users[token]
+      const info = users['admin-token']
 
       // mock error
       if (!info) {
@@ -69,10 +68,30 @@ export default [
       }
     }
   },
+  // get user info
+  {
+    url: '/api/user/user\.*',
+    type: 'get',
+    response: config => {
+      const info = users['admin-token']
 
+      // mock error
+      if (!info) {
+        return {
+          code: 50008,
+          message: 'Login failed, unable to get user details.'
+        }
+      }
+
+      return {
+        code: 20000,
+        data: info
+      }
+    }
+  },
   // user logout
   {
-    url: '/vue-element-admin/user/logout',
+    url: '/api/user/logout',
     type: 'post',
     response: _ => {
       return {

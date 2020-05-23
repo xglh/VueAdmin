@@ -17,24 +17,16 @@ export function getUsers() {
   })
 }
 
-export function getInfo(token) {
+export function getUserInfo(username) {
   return request({
-    url: '/vue-element-admin/user/info',
-    method: 'get',
-    params: { token }
+    url: '/api/user/user' + username,
+    method: 'get'
   })
 }
 
 export function logout() {
   return request({
-    url: '/vue-element-admin/user/logout',
+    url: '/api/user/logout',
     method: 'post'
-  })
-}
-
-export function getUser(userName) {
-  return request({
-    url: '/user/' + userName,
-    method: 'get'
   })
 }

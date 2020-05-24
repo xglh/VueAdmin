@@ -18,11 +18,16 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "VueAdmin.settings")
 django.setup()
 
 from user.models import SysUser
-from django.contrib.auth.hashers import make_password,check_password
+from django.contrib.auth.hashers import make_password, check_password
 
 # 创建系统角色
 
-admin_user = SysUser.objects.create(username='admin', password=make_password('admin2020'),
+admin_user = SysUser.objects.create(username='admin', password=make_password('123456'), email='1318633361@qq.com',
+                                    nick_name='admin',
                                     role='admin')
+for i in range(1, 40):
+    edit_user = SysUser.objects.create(username='editor{}'.format(i), password=make_password('123456'),
+                                       email='1318633361@qq.com', nick_name='editor{}'.format(i),
+                                       role='editor')
 # admin_user = SysUser.objects.get(username='admin')
 # print(check_password('admin2020',admin_user.password))

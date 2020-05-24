@@ -63,19 +63,6 @@ export const constantRoutes = [
     component: () => import('@/views/error-page/401'),
     hidden: true
   },
-  // {
-  //   path: '/',
-  //   component: Layout,
-  //   redirect: '/dashboard',
-  //   children: [
-  //     {
-  //       path: 'dashboard',
-  //       component: () => import('@/views/dashboard/index'),
-  //       name: 'Dashboard',
-  //       meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
-  //     }
-  //   ]
-  // },
   {
     path: '/',
     component: Layout,
@@ -85,7 +72,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/index/index'),
         name: 'index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
+        meta: { title: '首页', icon: 'dashboard', affix: false }
       }
     ]
   },
@@ -99,7 +86,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/profile/index'),
         name: 'Profile',
-        meta: { title: 'Profile', icon: 'user', noCache: true }
+        meta: { title: 'Profile', icon: 'user' }
       }
     ]
   }
@@ -110,6 +97,35 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/index',
+    children: [
+      {
+        path: 'user',
+        component: () => import('@/views/user/index'),
+        name: 'user',
+        meta: { title: '用户管理', icon: 'user', roles: ['admin'] }
+      },
+      {
+        path: 'user-create',
+        component: () => import('@/views/user/user-create'),
+        name: 'user-create',
+        hidden: true,
+        props: true,
+        meta: { title: '新增用户', roles: ['admin'] }
+      },
+      {
+        path: 'user-update',
+        component: () => import('@/views/user/user-update'),
+        name: 'user-update',
+        hidden: true,
+        props: true,
+        meta: { title: '编辑用户', roles: ['admin'] }
+      }
+    ]
+  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

@@ -10,10 +10,14 @@ export function login(data) {
 }
 
 // 获取用户列表
-export function getUsers() {
+export function getUsers(page, size) {
   return request({
     url: '/api/user/users',
-    method: 'get'
+    method: 'get',
+    params: {
+      page: page,
+      size: size || 20
+    }
   })
 }
 
@@ -55,7 +59,7 @@ export function deleteUser(userName) {
 export function logout() {
   return request({
     url: '/api/user/logout',
-    method: 'post'
+    method: 'put'
   })
 }
 

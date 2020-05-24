@@ -1,12 +1,15 @@
 import { login, logout, getUserInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getUserName, setUserName, removeUserName } from '@/utils/auth'
+import { setUserNameUpdate, removeUserNameUpdate } from '@/utils/user-update'
 import router, { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
   username: '',
   avatar: '',
-  roles: []
+  roles: [],
+  username_update: ''
 }
 
 const mutations = {
@@ -15,6 +18,9 @@ const mutations = {
   },
   SET_USERNAME: (state, username) => {
     state.username = username
+  },
+  SET_USERNAME_UPDATE: (state, username_update) => {
+    state.username_update = username_update
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
@@ -34,6 +40,7 @@ const actions = {
         commit('SET_TOKEN', data.token)
         commit('SET_USERNAME', username)
         setToken(data.token)
+        setUserName(username)
         resolve()
       }).catch(error => {
         reject(error)
@@ -44,7 +51,7 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getUserInfo(state.username).then(response => {
+      getUserInfo(getUserName()).then(response => {
         const { data } = response
 
         if (!data) {
@@ -69,12 +76,13 @@ const actions = {
   // user logout
   logout({ commit, state, dispatch }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+      logout().then(() => {
         commit('SET_TOKEN', '')
+        commit('SET_USERNAME', '')
         commit('SET_ROLES', [])
         removeToken()
+        removeUserName()
         resetRouter()
-
         // reset visited views and cached views
         // to fixed https://github.com/PanJiaChen/vue-element-admin/issues/2485
         dispatch('tagsView/delAllViews', null, { root: true })
@@ -91,7 +99,11 @@ const actions = {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
+      commit('SET_USERNAME', '')
+      commit('SET_USERNAME_UPDATE', '')
       removeToken()
+      removeUserName()
+      removeUserNameUpdate()
       resolve()
     })
   },
@@ -103,7 +115,6 @@ const actions = {
 
       commit('SET_TOKEN', token)
       setToken(token)
-
       const { roles } = await dispatch('getInfo')
       resetRouter()
 
@@ -118,6 +129,11 @@ const actions = {
 
       resolve()
     })
+  },
+
+  saveUserNameUpdate({ commit }, usernameUpdate) {
+    commit('SET_USERNAME_UPDATE', usernameUpdate)
+    setUserNameUpdate(usernameUpdate)
   }
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="app-container" style="margin-top: 20px;margin-left:50px;width: 50%">
     <h1>这是首页,当前用户:{{ username }} </h1>
   </div>
 </template>

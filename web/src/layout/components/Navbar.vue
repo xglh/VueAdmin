@@ -20,9 +20,10 @@
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
-        </div>
+            <img :src="getAvatar" class="user-avatar" alt="">
+            <!--              <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">-->
+            <i class="el-icon-caret-bottom" />
+          </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/profile/index">
             <el-dropdown-item>个人信息</el-dropdown-item>
@@ -54,12 +55,25 @@ export default {
     SizeSelect,
     Search
   },
+  data() {
+    return {
+      // avatar_src: this.getAvatar()
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar',
       'device'
-    ])
+    ]),
+    getAvatar() {
+      let target_avatar = this.avatar
+      if (target_avatar === '') {
+        target_avatar = '@/assets/default_avatar.jpg'
+      }
+      return target_avatar
+    }
+
   },
   methods: {
     toggleSideBar() {
@@ -69,6 +83,7 @@ export default {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
+
   }
 }
 </script>

@@ -1,7 +1,7 @@
 import { login, logout, getUserInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { getUserName, setUserName, removeUserName } from '@/utils/auth'
-import { setUserNameUpdate, removeUserNameUpdate } from '@/utils/user-update'
+import { getUserNameUpdate, setUserNameUpdate } from '@/utils/user-update'
 import router, { resetRouter } from '@/router'
 
 const state = {
@@ -9,7 +9,7 @@ const state = {
   username: '',
   avatar: '',
   roles: [],
-  username_update: ''
+  username_update: getUserNameUpdate()
 }
 
 const mutations = {
@@ -100,10 +100,8 @@ const actions = {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
       commit('SET_USERNAME', '')
-      commit('SET_USERNAME_UPDATE', '')
       removeToken()
       removeUserName()
-      removeUserNameUpdate()
       resolve()
     })
   },
@@ -132,9 +130,13 @@ const actions = {
   },
 
   saveUserNameUpdate({ commit }, usernameUpdate) {
-    commit('SET_USERNAME_UPDATE', usernameUpdate)
-    setUserNameUpdate(usernameUpdate)
+    return new Promise(resolve => {
+      commit('SET_USERNAME_UPDATE', usernameUpdate)
+      setUserNameUpdate(usernameUpdate)
+      resolve()
+    })
   }
+
 }
 
 export default {

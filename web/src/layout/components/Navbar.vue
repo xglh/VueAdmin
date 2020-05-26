@@ -20,10 +20,11 @@
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-            <img :src="getAvatar" class="user-avatar" alt="">
-            <!--              <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">-->
-            <i class="el-icon-caret-bottom" />
-          </div>
+          <img v-if="avatar===''" src="@/assets/default_avatar.jpg" class="user-avatar" alt="">
+          <img v-else :src="avatar" class="user-avatar" alt="">
+          <!--              <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">-->
+          <i class="el-icon-caret-bottom" />
+        </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/profile/index">
             <el-dropdown-item>个人信息</el-dropdown-item>
@@ -65,14 +66,14 @@ export default {
       'sidebar',
       'avatar',
       'device'
-    ]),
-    getAvatar() {
-      let target_avatar = this.avatar
-      if (target_avatar === '') {
-        target_avatar = '@/assets/default_avatar.jpg'
-      }
-      return target_avatar
-    }
+    ])
+    // getAvatar() {
+    //   let target_avatar = this.avatar
+    //   if (target_avatar === '') {
+    //     target_avatar = '@/assets/default_avatar.jpg'
+    //   }
+    //   return target_avatar
+    // }
 
   },
   methods: {

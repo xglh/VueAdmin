@@ -29,7 +29,9 @@
 </template>
 <script>
 import { getUserInfo } from '@/api/user'
-import { getUserNameUpdate, setUserNameUpdate } from '@/utils/user-update'
+// import { getUserNameUpdate, setUserNameUpdate } from '@/utils/user-update'
+import store from '@/store'
+
 export default {
   name: 'UserUpdate',
   data() {
@@ -66,9 +68,10 @@ export default {
   methods: {
     fetchData() {
       let username_update = this.$route.params.username
-      username_update = username_update || getUserNameUpdate()
+      const username_update_store = store.getters.username_update
+      username_update = username_update || username_update_store
+      store.dispatch('user/saveUserNameUpdate', username_update)
       this.username_update = username_update
-      setUserNameUpdate(username_update)
       this.loading = true
       // replace getPost with your data fetching util / API wrapper
       getUserInfo(username_update).then(

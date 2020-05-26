@@ -21,6 +21,16 @@ export function getUsers(page, size) {
   })
 }
 
+// 批量删除用户
+export function deleteUsers(userNameList) {
+  return request({
+    url: '/api/user/users',
+    method: 'delete',
+    data: userNameList
+
+  })
+}
+
 // 获取用户信息
 export function getUserInfo(username) {
   return request({
@@ -51,7 +61,7 @@ export function updateUserInfo(data) {
 export function deleteUser(userName) {
   return request({
     url: '/api/user/user/' + userName,
-    method: 'detele'
+    method: 'delete'
   })
 }
 

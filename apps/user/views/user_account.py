@@ -89,8 +89,9 @@ class UserSysInfoView(APIView):
         return Response(response.to_json())
 
 
-class UserSysListView(APIView):
+class UserSysUsersView(APIView):
 
+    # 获取用户信息列表
     def get(self, request):
         response = BaseResponse()
         try:
@@ -107,6 +108,23 @@ class UserSysListView(APIView):
                 'total': total,
                 'rows': data_list
             }
+        except Exception as e:
+            response.set_http_500_response(message=str(e))
+            logger.error(traceback.format_exc())
+
+        return Response(response.to_json())
+
+    # 批量删除用户
+    def delete(self, request):
+        response = BaseResponse()
+        try:
+            body = request.data
+            try:
+                assert type(body) == list
+            except Exception:
+                response.set_error_response(400,message='参数类型错误')
+            else:
+                SysUser.objects.filter(username__in=body).delete()
         except Exception as e:
             response.set_http_500_response(message=str(e))
             logger.error(traceback.format_exc())

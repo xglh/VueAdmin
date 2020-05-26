@@ -7,7 +7,7 @@
 from django.urls import path
 
 from user.views.user_login import UserLoginView, UserLogoutView
-from user.views.user_account import UserSysCreateView, UserSysInfoView, UserSysListView
+from user.views.user_account import UserSysCreateView, UserSysInfoView, UserSysUsersView
 
 urlpatterns = [
     # 登录
@@ -15,7 +15,7 @@ urlpatterns = [
     # 登出
     path(r'logout', UserLogoutView.as_view()),
     # 获取user信息列表
-    path('users', UserSysListView.as_view()),
+    path('users', UserSysUsersView.as_view()),
     # 新增user
     path('user', UserSysCreateView.as_view()),
     # user接口

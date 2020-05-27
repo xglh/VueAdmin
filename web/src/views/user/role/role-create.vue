@@ -1,17 +1,19 @@
 <template>
-  <div class="app-container" style="margin-top: 100px;margin-left:400px;width: 50%">
-    <el-form ref="form" :model="form" :rules="rules" label-width="100px" style="width: 50%">
+  <div class="app-container" style="width: 100%">
+    <el-card style="margin-left:250px;width:50%">
+    <el-form ref="form" :model="form" :rules="rules" label-width="100px" style="margin-top: 20px;margin-left:30px;width: 60%">
       <el-form-item label="角色：" prop="role">
         <el-input v-model="form.role" placeholder="3-24位长度" />
       </el-form-item>
       <el-form-item label="名称：" prop="roleName">
         <el-input v-model="form.roleName" placeholder="3-24位长度"/>
       </el-form-item>
-      <el-form-item style="margin-left: 30px">
+      <el-form-item style="margin-left: 20px">
         <el-button type="primary" @click="onCreateUser">创建</el-button>
         <el-button style="margin-left: 60px" @click="onReset">重置</el-button>
       </el-form-item>
     </el-form>
+    </el-card>
   </div>
 </template>
 <script>

@@ -57,7 +57,7 @@ export default {
   methods: {
     getUser() {
       this.user = {
-        name: this.name,
+        username: this.username,
         role: this.roles.join(' | '),
         email: 'admin@test.com',
         avatar: this.avatar

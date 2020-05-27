@@ -4,7 +4,7 @@
 # @Author  : liuhui
 # @Detail  : 序列化
 
-from user.models import SysUser, role_choice
+from user.models import SysRole,SysUser
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.hashers import make_password
@@ -35,8 +35,7 @@ class SysUserCreateSerializer(serializers.ModelSerializer):
         return make_password(password)
 
     def validate_role(self, role):
-        role_allowed_list = [x[0] for x in role_choice]
-        print(role, role_allowed_list)
+        role_allowed_list = [x['role'] for x in SysRole.objects.values('role').distinct()]
         if role not in role_allowed_list:
             raise serializers.ValidationError('role只能为:{}'.format(','.join(role_allowed_list)))
         return role
@@ -63,7 +62,7 @@ class SysUserUpdateSerializer(serializers.ModelSerializer):
         return password
 
     def validate_role(self, role):
-        role_allowed_list = [x[0] for x in role_choice]
+        role_allowed_list = [x['role'] for x in SysRole.objects.values('role').distinct()]
         if role and role not in role_allowed_list:
             raise serializers.ValidationError('role只能为:{}'.format(','.join(role_allowed_list)))
         return role

@@ -36,7 +36,7 @@
     <el-table
       :key="tableKey"
       v-loading="listLoading"
-      :data="userList"
+      :data="userInfoList"
       border
       fit
       highlight-current-row
@@ -60,6 +60,9 @@
           <el-button size="mini" type="primary" @click="handleUpdateUser(row.username)">
             编辑
           </el-button>
+          <el-button size="mini" type="primary" @click="handleUpdatePassword(row.username)">
+            重置密码
+          </el-button>
           <el-button size="mini" type="danger" @click="handleDeleteUser(row.username)">
             删除
           </el-button>
@@ -71,7 +74,7 @@
       :total="total"
       :page.sync="listQuery.page"
       :limit.sync="listQuery.size"
-      @pagination="getList"
+      @pagination="getUserInfoList"
     />
   </div>
 </template>
@@ -79,7 +82,7 @@
 <script>
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { getUsers, deleteUser, deleteUsers } from '@/api/user'
+import { getUsers, deleteUser, deleteUsers, getRoles, updateUserInfo } from '@/api/user'
 import { Message } from 'element-ui'
 
 export default {
@@ -89,7 +92,7 @@ export default {
   data() {
     return {
       tableKey: 0,
-      userList: [],
+      userInfoList: [],
       total: 0,
       listLoading: true,
       listQuery: {
@@ -101,34 +104,39 @@ export default {
         {
           value: '',
           label: '全部'
-        },
-        {
-          value: 'admin',
-          label: '管理员'
-        },
-        {
-          value: 'editor',
-          label: '普通用户'
         }
       ],
       deleteUserList: []
     }
   },
   created() {
-    this.getList()
+    this.getRoleInfoList()
+    this.getUserInfoList()
   },
   methods: {
-    getList() {
+    getRoleInfoList() {
+      getRoles(this.listQuery.page, this.listQuery.size).then(response => {
+        var roleList = response.data.rows
+        roleList.forEach(data => {
+          this.roleTypeOptinos.push({
+            value: data.role,
+            label: data.roleName
+          })
+        })
+      })
+    },
+
+    getUserInfoList() {
       this.listLoading = true
-      getUsers(this.listQuery.page, this.listQuery.size).then(response => {
-        this.userList = response.data.rows
+      getUsers(this.roleTypeVaule, this.listQuery.page, this.listQuery.size).then(response => {
+        this.userInfoList = response.data.rows
         this.total = response.data.total
         this.listLoading = false
       })
     },
     handleRoleTypeFilter() {
       this.listQuery.page = 1
-      this.getList()
+      this.getUserInfoList()
     },
     handleCreateUser() {
       this.$router.push({ name: 'user-create' })
@@ -160,7 +168,7 @@ export default {
                   message: '删除成功!',
                   duration: 1500
                 })
-                this.getList()
+                this.getUserInfoList()
               }
             }
           )
@@ -185,7 +193,7 @@ export default {
                 message: '删除成功!',
                 duration: 1500
               })
-              this.getList()
+              this.getuserInfoList()
             }
           }
         )
@@ -194,6 +202,37 @@ export default {
     },
     handleSelectionChange(val) {
       this.deleteUserList = val
+    },
+    handleUpdatePassword(username) {
+      this.$prompt('请输入密码：', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPlaceholder: '请输入6-24位密码',
+        inputPattern: /^.{6,24}$/,
+        inputErrorMessage: '请输入6-24位密码'
+      }).then(({ value }) => {
+        if (value.length < 6 || value.length > 24) {
+          this.$message({
+            type: 'error',
+            message: '请输入6-24位密码'
+          })
+        } else {
+          var data = {
+            password: value
+          }
+          updateUserInfo(username, data).then(
+            res => {
+              if (res.success) {
+                this.$message({
+                  type: 'success',
+                  message: '密码重置为:' + value
+                })
+              }
+            }
+          )
+        }
+      }).catch(() => {
+      })
     }
   }
 }

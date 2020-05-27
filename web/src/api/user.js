@@ -8,13 +8,77 @@ export function login(data) {
     data
   })
 }
+// 用户登出
+export function logout() {
+  return request({
+    url: '/api/user/logout',
+    method: 'put'
+  })
+}
+
+// 获取角色列表
+export function getRoles(page, size) {
+  return request({
+    url: '/api/user/roles',
+    method: 'get',
+    params: {
+      page: page,
+      size: size || 20
+    }
+  })
+}
+
+// 批量删除角色
+export function deleteRoles(userNameList) {
+  return request({
+    url: '/api/user/roles',
+    method: 'delete',
+    data: userNameList
+
+  })
+}
+
+// 获取角色信息
+export function getRoleInfo(role) {
+  return request({
+    url: '/api/user/role/' + role,
+    method: 'get'
+  })
+}
+
+// 新增角色
+export function createRole(data) {
+  return request({
+    url: '/api/user/role',
+    method: 'post',
+    data
+  })
+}
+
+// 修改角色信息
+export function updateRoleInfo(role, data) {
+  return request({
+    url: '/api/user/role/' + role,
+    method: 'put',
+    data
+  })
+}
+
+// 删除角色
+export function deleteRole(role) {
+  return request({
+    url: '/api/user/role/' + role,
+    method: 'delete'
+  })
+}
 
 // 获取用户列表
-export function getUsers(page, size) {
+export function getUsers(roleType, page, size) {
   return request({
     url: '/api/user/users',
     method: 'get',
     params: {
+      roleType: roleType,
       page: page,
       size: size || 20
     }
@@ -49,9 +113,9 @@ export function createUser(data) {
 }
 
 // 修改用户信息
-export function updateUserInfo(data) {
+export function updateUserInfo(userName, data) {
   return request({
-    url: '/api/user/user',
+    url: '/api/user/user/' + userName,
     method: 'put',
     data
   })
@@ -64,12 +128,3 @@ export function deleteUser(userName) {
     method: 'delete'
   })
 }
-
-// 用户登出
-export function logout() {
-  return request({
-    url: '/api/user/logout',
-    method: 'put'
-  })
-}
-

@@ -4,6 +4,7 @@
 from rest_framework.pagination import PageNumberPagination
 
 
+
 class JsonSerializer:
 
     def to_json(self):

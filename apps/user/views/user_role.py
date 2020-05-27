@@ -9,20 +9,20 @@ import traceback
 from rest_framework.exceptions import NotFound
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from user.serializers.user_serializer import SysUserCreateSerializer, SysUserUpdateSerializer, SysUserInfoSerializer
-from user.models import SysUser
+from user.serializers.role_serializer import SysRoleCreateSerializer, SysRoleUpdateSerializer, SysRoleInfoSerializer
+from user.models import SysRole
 from VueAdmin.base import BaseResponse, MyPageNumberPagination
 
 logger = logging.getLogger('mylogger')
 
 
-# 创建用户
-class SysUserCreateView(APIView):
+# 创建角色
+class SysRoleCreateView(APIView):
 
     def post(self, request):
         response = BaseResponse()
         try:
-            serializer = SysUserCreateSerializer(data=request.data)
+            serializer = SysRoleCreateSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
             else:
@@ -33,18 +33,18 @@ class SysUserCreateView(APIView):
         return Response(response.to_json())
 
 
-class SysUserInfoView(APIView):
+class SysRoleInfoView(APIView):
 
-    # 获取用户信息
-    def get(self, request, userName):
+    # 获取角色信息
+    def get(self, request, role):
         response = BaseResponse()
         try:
             try:
-                user_qs = SysUser.objects.get(username=userName)
-            except SysUser.DoesNotExist:
+                user_qs = SysRole.objects.get(role=role)
+            except SysRole.DoesNotExist:
                 response.set_error_response(code=404, message='用户不存在')
             else:
-                serializer = SysUserInfoSerializer(user_qs)
+                serializer = SysRoleInfoSerializer(user_qs)
                 response.data = serializer.data
         except Exception as e:
             response.set_http_500_response(message=str(e))
@@ -52,16 +52,16 @@ class SysUserInfoView(APIView):
         return Response(response.to_json())
 
     # 修改用户信息
-    def put(self, request, userName):
+    def put(self, request, role):
         response = BaseResponse()
         try:
             try:
-                user_qs = SysUser.objects.get(username=userName)
-            except SysUser.DoesNotExist:
+                user_qs = SysRole.objects.get(role=role)
+            except SysRole.DoesNotExist:
                 response.set_error_response(code=500, message='用户不存在')
             else:
 
-                serializer = SysUserUpdateSerializer(data=request.data, instance=user_qs)
+                serializer = SysRoleUpdateSerializer(data=request.data, instance=user_qs)
                 if serializer.is_valid():
                     serializer.save()
                 else:
@@ -72,12 +72,12 @@ class SysUserInfoView(APIView):
         return Response(response.to_json())
 
     # 删除用户
-    def delete(self, request, userName):
+    def delete(self, request, role):
         response = BaseResponse()
         try:
             try:
-                user_qs = SysUser.objects.get(username=userName)
-            except SysUser.DoesNotExist:
+                user_qs = SysRole.objects.get(role=role)
+            except SysRole.DoesNotExist:
                 response.set_error_response(code=500, message='用户不存在')
             else:
                 user_qs.delete()
@@ -87,26 +87,19 @@ class SysUserInfoView(APIView):
         return Response(response.to_json())
 
 
-class SysUserUsersView(APIView):
+class SysRolesView(APIView):
 
-    # 获取用户信息列表
+    # 获取角色信息列表
     def get(self, request):
         response = BaseResponse()
         try:
-            user_qs = SysUser.objects.all()
 
-            # roleType过滤
-            params = request.GET
-            role_type = params.get('role_type')
-            if role_type:
-                user_qs = user_qs.filter(role=role_type)
-            user_qs = user_qs.order_by('id')
-
+            user_qs = SysRole.objects.all().order_by('id')
             data_list, total = [], user_qs.count()
             try:
                 page = MyPageNumberPagination()
                 pages_query_set = page.paginate_queryset(queryset=user_qs, request=request, view=self)
-                serializer = SysUserInfoSerializer(instance=pages_query_set, many=True)
+                serializer = SysRoleInfoSerializer(instance=pages_query_set, many=True)
                 data_list = serializer.data
             except NotFound:
                 data_list = []
@@ -120,7 +113,7 @@ class SysUserUsersView(APIView):
 
         return Response(response.to_json())
 
-    # 批量删除用户
+    # 批量删除角色
     def delete(self, request):
         response = BaseResponse()
         try:
@@ -130,7 +123,7 @@ class SysUserUsersView(APIView):
             except Exception:
                 response.set_error_response(400,message='参数类型错误')
             else:
-                SysUser.objects.filter(username__in=body).delete()
+                SysRole.objects.filter(role__in=body).delete()
         except Exception as e:
             response.set_http_500_response(message=str(e))
             logger.error(traceback.format_exc())

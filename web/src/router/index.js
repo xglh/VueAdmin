@@ -79,14 +79,21 @@ export const constantRoutes = [
   {
     path: '/profile',
     component: Layout,
-    redirect: '/profile/index',
+    // redirect: '/profile/index',
     hidden: true,
+    meta: { title: '个人信息' },
     children: [
       {
         path: 'index',
         component: () => import('@/views/profile/index'),
-        name: 'Profile',
-        meta: { title: 'Profile', icon: 'user' }
+        name: 'profile',
+        meta: { title: '个人信息', icon: 'user' }
+      },
+      {
+        path: 'update-password',
+        component: () => import('@/views/profile/update-password'),
+        name: 'update-password',
+        meta: { title: '修改密码', icon: 'user' }
       }
     ]
   }
@@ -101,24 +108,47 @@ export const asyncRoutes = [
     path: '/user',
     component: Layout,
     redirect: '/user/index',
+    meta: { title: '用户管理', icon: 'peoples', roles: ['admin'] },
     children: [
       {
+        path: 'role',
+        component: () => import('@/views/user/role/index'),
+        name: 'role',
+        meta: { title: '角色管理', roles: ['admin'] }
+      },
+      {
         path: 'user',
-        component: () => import('@/views/user/index'),
+        component: () => import('@/views/user/user/index'),
         name: 'user',
-        meta: { title: '用户管理', icon: 'user', roles: ['admin'] }
+        meta: { title: '账号管理', roles: ['admin'] }
+      },
+      {
+        path: 'role-create',
+        component: () => import('@/views/user/role/role-create'),
+        name: 'role-create',
+        hidden: true,
+        props: true,
+        meta: { title: '新增角色', roles: ['admin'] }
+      },
+      {
+        path: 'role-update/:role',
+        component: () => import('@/views/user/role/role-update'),
+        name: 'role-update',
+        hidden: true,
+        props: true,
+        meta: { title: '编辑角色', roles: ['admin'] }
       },
       {
         path: 'user-create',
-        component: () => import('@/views/user/user-create'),
+        component: () => import('@/views/user/user/user-create'),
         name: 'user-create',
         hidden: true,
         props: true,
         meta: { title: '新增用户', roles: ['admin'] }
       },
       {
-        path: 'user-update',
-        component: () => import('@/views/user/user-update'),
+        path: 'user-update/:username',
+        component: () => import('@/views/user/user/user-update'),
         name: 'user-update',
         hidden: true,
         props: true,

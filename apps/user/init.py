@@ -17,10 +17,13 @@ os.environ.setdefault('FORKED_BY_MULTIPROCESSING', '1')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "VueAdmin.settings")
 django.setup()
 
-from user.models import SysUser
+from user.models import SysRole,SysUser
 from django.contrib.auth.hashers import make_password, check_password
 
 # 创建系统角色
+
+SysRole.objects.create(role='admin',role_name='管理员')
+SysRole.objects.create(role='editor',role_name='普通用户')
 
 admin_user = SysUser.objects.create(username='admin', password=make_password('123456'), email='1318633361@qq.com',
                                     nick_name='admin',

@@ -172,11 +172,11 @@ export default {
         //   const token = _this.$store.getters.token;
         //   getToken(token).then(response => {
         //     const url = response.data.qiniu_url;
-        //     const formData = new FormData();
-        //     formData.append('token', response.data.qiniu_token);
-        //     formData.append('key', response.data.qiniu_key);
-        //     formData.append('file', blobInfo.blob(), url);
-        //     upload(formData).then(() => {
+        //     const form = new FormData();
+        //     form.append('token', response.data.qiniu_token);
+        //     form.append('key', response.data.qiniu_key);
+        //     form.append('file', blobInfo.blob(), url);
+        //     upload(form).then(() => {
         //       success(url);
         //       progress(100);
         //     })

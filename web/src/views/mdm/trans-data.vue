@@ -68,7 +68,7 @@ import { getRoles, deleteRole, deleteRoles } from '@/api/user'
 import { Message } from 'element-ui'
 
 export default {
-  name: 'RoleList',
+  name: 'MdmTransData',
   components: { Pagination },
   directives: { waves },
   data() {

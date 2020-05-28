@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" style="width: 100%">
     <el-card style="margin-left:250px;width:50%">
-    <el-form ref="form" :model="form" :rules="rules" label-width="80px" style="margin-top: 20px;margin-left:30px;width: 60%">
+    <el-form ref="form" :model="form" :rules="rules" :status-icon="status_icon" label-width="80px" style="margin-top: 20px;margin-left:30px;width: 60%">
       <el-form-item label="角色：">
         {{ role_update }}
       </el-form-item>
@@ -24,11 +24,11 @@ export default {
   name: 'RoleUpdate',
   data() {
     return {
-      loading: false,
       role_update: '',
       form: {
         roleName: ''
       },
+      status_icon: true,
       rules: {
         roleName: [
           { required: true, message: '请输入名称', trigger: 'blur' },
@@ -50,11 +50,9 @@ export default {
     fetchData() {
       const role_update = this.$route.params.role
       this.role_update = role_update
-      this.loading = true
       // replace getPost with your data fetching util / API wrapper
       getRoleInfo(role_update).then(
         res => {
-          this.loading = false
           const data = res.data
           this.form.roleName = data.roleName
         }

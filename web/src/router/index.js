@@ -63,10 +63,33 @@ export const constantRoutes = [
     component: () => import('@/views/error-page/401'),
     hidden: true
   },
+
+  {
+    path: '/profile',
+    component: Layout,
+    // redirect: '/profile/index',
+    hidden: true,
+    meta: { title: '个人信息' },
+    children: [
+      {
+        path: 'user-info',
+        component: () => import('@/views/profile/user-info'),
+        name: 'user-info',
+        meta: { title: '个人信息' }
+      },
+      {
+        path: 'update-password',
+        component: () => import('@/views/profile/update-password'),
+        name: 'update-password',
+        meta: { title: '修改密码' }
+      }
+    ]
+  },
   {
     path: '/',
     component: Layout,
     redirect: '/index',
+    rank: 10,
     children: [
       {
         path: 'index',
@@ -77,23 +100,28 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/profile',
+    path: '/mdm',
     component: Layout,
-    // redirect: '/profile/index',
-    hidden: true,
-    meta: { title: '个人信息' },
+    meta: { title: '基础数据测试中心', icon: 'chart' },
+    rank: 30,
     children: [
       {
-        path: 'index',
-        component: () => import('@/views/profile/index'),
-        name: 'profile',
-        meta: { title: '个人信息', icon: 'user' }
+        path: 'mdm-dashbord',
+        component: () => import('@/views/mdm/dashboard'),
+        name: 'mdm-dashbord',
+        meta: { title: 'dashbord' }
       },
       {
-        path: 'update-password',
-        component: () => import('@/views/profile/update-password'),
-        name: 'update-password',
-        meta: { title: '修改密码', icon: 'user' }
+        path: 'mdm-test-data',
+        component: () => import('@/views/mdm/test-data'),
+        name: 'mdm-test-data',
+        meta: { title: '测试数据' }
+      },
+      {
+        path: 'mdm-trans-data',
+        component: () => import('@/views/mdm/trans-data'),
+        name: 'mdm-trans-data',
+        meta: { title: '译码数据' }
       }
     ]
   }
@@ -104,11 +132,13 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+
   {
     path: '/user',
     component: Layout,
     redirect: '/user/index',
     meta: { title: '用户管理', icon: 'peoples', roles: ['admin'] },
+    rank: 20,
     children: [
       {
         path: 'role',

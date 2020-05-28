@@ -13,6 +13,14 @@ function hasPermission(roles, route) {
   }
 }
 
+function compare(arg) {
+  return function(a, b) {
+    var a_arg = a[arg] || 100000000
+    var b_arg = b[arg] || 100000000
+    return a_arg - b_arg
+  }
+}
+
 /**
  * Filter asynchronous routing tables by recursion
  * @param routes asyncRoutes
@@ -43,6 +51,7 @@ const mutations = {
   SET_ROUTES: (state, routes) => {
     state.addRoutes = routes
     state.routes = constantRoutes.concat(routes)
+    state.routes = state.routes.sort(compare('rank'))
   }
 }
 

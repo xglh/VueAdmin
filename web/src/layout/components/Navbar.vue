@@ -26,7 +26,7 @@
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link :to="{ name: 'profile'}">
+          <router-link :to="{ name: 'user-info'}">
             <el-dropdown-item>个人信息</el-dropdown-item>
           </router-link>
           <router-link :to="{ name: 'update-password'}">

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" style="width: 100%">
     <el-card style="margin-left:250px;width:50%">
-    <el-form ref="form" :model="form" :rules="rules" label-width="100px" style="margin-top: 20px;margin-left:30px;width: 60%">
+    <el-form ref="form" :model="form" :rules="rules" :status-icon="status_icon" label-width="100px" style="margin-top: 20px;margin-left:30px;width: 60%">
       <el-form-item label="用户名：" prop="username">
         <el-input v-model="form.username" placeholder="3-24位长度" />
       </el-form-item>
@@ -70,7 +70,6 @@ export default {
       callback()
     }
     return {
-      loading: false,
       roleValue: '',
       roleTypeVaule: '',
       roleTypeOptinos: [
@@ -91,7 +90,7 @@ export default {
         phone: '',
         email: ''
       },
-
+      status_icon: true,
       rules: {
         username: [
           { required: true, message: '请输入用户名', trigger: 'blur' },

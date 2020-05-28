@@ -1,17 +1,19 @@
 <template>
-  <div class="app-container" style="margin-top: 100px;margin-left:400px;width: 50%">
-    <el-form ref="form" :model="form" :rules="rules" label-width="100px" style="width: 50%">
+  <div class="app-container" style="width: 100%">
+     <el-card style="margin-left:250px;width:50%">
+    <el-form ref="form" :model="form" :rules="rules" :status-icon="status_icon" label-width="100px" style="margin-top: 20px;margin-left:30px;width: 60%">
       <el-form-item label="密码：" prop="password">
         <el-input v-model="form.password" placeholder="6-24位长度" type="password" />
       </el-form-item>
       <el-form-item label="确认密码：" prop="re_password">
         <el-input v-model="form.re_password" placeholder="6-24位长度" type="password" />
       </el-form-item>
-      <el-form-item style="margin-left: 30px">
+      <el-form-item style="margin-left: 20px">
         <el-button type="primary" @click="onUpdatePassword">保存</el-button>
-        <el-button style="margin-left: 60px" @click="onReset">重置</el-button>
+        <el-button style="margin-left: 30px" @click="onReset">重置</el-button>
       </el-form-item>
     </el-form>
+     </el-card>
   </div>
 </template>
 <script>
@@ -31,11 +33,11 @@ export default {
       callback()
     }
     return {
-      loading: false,
       form: {
         password: '',
         re_password: ''
       },
+      status_icon: true,
       rules: {
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },

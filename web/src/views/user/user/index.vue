@@ -40,7 +40,7 @@
       border
       fit
       highlight-current-row
-      style="width: 80%;"
+      style="width: 65%;"
       @selection-change="handleSelectionChange"
     >
       <el-table-column
@@ -48,10 +48,11 @@
         width="40"
       />
       <el-table-column label="ID" type="index" align="center" />
-      <el-table-column label="用户名" prop="username" align="center" />
+      <el-table-column label="用户名" prop="username" align="center"/>
       <el-table-column label="角色" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.roles[0] }}</span>
+          <span v-if="row.roles[0]==='admin'"><el-tag>管理员</el-tag></span>
+          <span v-else>{{ getRoleName(row.roles[0]) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="邮箱" prop="email" align="center" />
@@ -60,7 +61,7 @@
           <el-button size="mini" type="primary" @click="handleUpdateUser(row.username)">
             编辑
           </el-button>
-          <el-button size="mini" type="primary" @click="handleUpdatePassword(row.username)">
+          <el-button size="mini" type="success" @click="handleUpdatePassword(row.username)">
             重置密码
           </el-button>
           <el-button size="mini" type="danger" @click="handleDeleteUser(row.username)">
@@ -106,18 +107,25 @@ export default {
           label: '全部'
         }
       ],
-      deleteUserList: []
+      deleteUserList: [],
+      roleNameInfo: {}
     }
   },
   created() {
-    this.getRoleInfoList()
-    this.getUserInfoList()
+    this.fetchData()
   },
   methods: {
-    getRoleInfoList() {
+    fetchData: async function() {
+      this.listLoading = true
+      await this.getRoleList()
+      this.getUserInfoList()
+      this.listLoading = false
+    },
+    getRoleList() {
       getRoles(this.listQuery.page, this.listQuery.size).then(response => {
         var roleList = response.data.rows
         roleList.forEach(data => {
+          this.roleNameInfo[data.role] = data.roleName
           this.roleTypeOptinos.push({
             value: data.role,
             label: data.roleName
@@ -125,14 +133,15 @@ export default {
         })
       })
     },
-
     getUserInfoList() {
-      this.listLoading = true
       getUsers(this.roleTypeVaule, this.listQuery.page, this.listQuery.size).then(response => {
         this.userInfoList = response.data.rows
         this.total = response.data.total
         this.listLoading = false
       })
+    },
+    getRoleName(role) {
+      return this.roleNameInfo[role]
     },
     handleRoleTypeFilter() {
       this.listQuery.page = 1
@@ -168,7 +177,7 @@ export default {
                   message: '删除成功!',
                   duration: 1500
                 })
-                this.getUserInfoList()
+                this.fetchData()
               }
             }
           )
@@ -193,7 +202,7 @@ export default {
                 message: '删除成功!',
                 duration: 1500
               })
-              this.getuserInfoList()
+              this.fetchData()
             }
           }
         )

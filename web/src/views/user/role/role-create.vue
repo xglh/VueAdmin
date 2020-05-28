@@ -1,7 +1,7 @@
 <template>
   <div class="app-container" style="width: 100%">
     <el-card style="margin-left:250px;width:50%">
-    <el-form ref="form" :model="form" :rules="rules" label-width="100px" style="margin-top: 20px;margin-left:30px;width: 60%">
+    <el-form ref="form" :model="form" :rules="rules" :status-icon="status_icon" label-width="100px" style="margin-top: 20px;margin-left:30px;width: 60%">
       <el-form-item label="角色：" prop="role">
         <el-input v-model="form.role" placeholder="3-24位长度" />
       </el-form-item>
@@ -23,12 +23,11 @@ export default {
   name: 'UserCreate',
   data() {
     return {
-      loading: false,
       form: {
         role: '',
         roleName: ''
       },
-
+      status_icon: true,
       rules: {
         role: [
           { required: true, message: '请输入角色', trigger: 'blur' },

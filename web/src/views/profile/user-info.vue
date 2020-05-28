@@ -3,23 +3,19 @@
     <el-card style="margin-left:250px;width:50%">
     <el-form ref="form" :model="form" :rules="rules" :status-icon="status_icon" label-width="80px" style="margin-top: 20px;margin-left:30px;width: 60%">
       <el-form-item label="用户名：">
-        {{ username_update }}
+        {{ username }}
       </el-form-item>
-      <el-form-item label="角色：" prop="role">
-        <el-select v-model="roleTypeVaule" placeholder="请选择" style="width: 100%">
-          <el-option
-            v-for="item in roleTypeOptinos"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
+      <el-form-item label="角色：">
+        {{ roleName }}
       </el-form-item>
       <el-form-item label="手机号：" prop="phone">
         <el-input v-model="form.phone" />
       </el-form-item>
       <el-form-item label="邮箱：" prop="email">
         <el-input v-model="form.email" />
+      </el-form-item>
+      <el-form-item label="头像：" prop="avatar">
+        <el-input v-model="form.avatar" placeholder="请输入头像链接"/>
       </el-form-item>
       <el-form-item style="margin-left: 20px">
         <el-button type="primary" @click="onUpdateUser">保存</el-button>
@@ -30,19 +26,12 @@
   </div>
 </template>
 <script>
-import { getUserInfo, updateUserInfo } from '@/api/user'
+import { getRoleInfo, getUserInfo, updateUserInfo } from '@/api/user'
 import { Message } from 'element-ui'
-
+import store from '@/store'
 export default {
-  name: 'UserUpdate',
+  name: 'UserInfo',
   data() {
-    // 自定义phone校验
-    var validate_role = (rule, value, callback) => {
-      if (this.roleTypeVaule === '') {
-        callback(new Error('请选中角色'))
-      }
-      callback()
-    }
     var validate_phone = (rule, value, callback) => {
       if (value.length > 0 && value.length !== 11) {
         callback(new Error('请输入11位手机号'))
@@ -56,34 +45,32 @@ export default {
       }
       callback()
     }
+    var validate_avatar = (rule, value, callback) => {
+      var reg = /^https?:.*/
+      if (value.length > 0 && !reg.test(value)) {
+        callback(new Error('请输入正确的链接'))
+      }
+      callback()
+    }
     return {
-      username_update: '',
+      username: store.getters.username,
+      role: '',
+      roleName: '',
       form: {
-        role: '',
         phone: '',
-        email: ''
+        email: '',
+        avatar: ''
       },
-      roleTypeVaule: '',
-      roleTypeOptinos: [
-        {
-          value: 'admin',
-          label: '管理员'
-        },
-        {
-          value: 'editor',
-          label: '普通用户'
-        }
-      ],
       status_icon: true,
       rules: {
-        role: [
-          { validator: validate_role, trigger: 'blur' }
-        ],
         phone: [
           { validator: validate_phone, trigger: 'blur' }
         ],
         email: [
           { validator: validate_email, trigger: 'blur' }
+        ],
+        avatar: [
+          { validator: validate_avatar, trigger: 'blur' }
         ]
       }
     }
@@ -98,23 +85,25 @@ export default {
     this.fetchData()
   },
   methods: {
-    fetchData() {
-      const username_update = this.$route.params.username
-      this.username_update = username_update
-      // replace getPost with your data fetching util / API wrapper
-      getUserInfo(username_update).then(
+    fetchData: async function() {
+      await getUserInfo(this.username).then(
         res => {
           const data = res.data
-          this.form.role = data.roles[0]
+          this.role = data.roles[0]
           this.form.phone = data.phone
           this.form.email = data.email
-          this.roleTypeVaule = data.roles[0]
+          this.form.avatar = data.avatar
+        }
+      )
+      getRoleInfo(this.role).then(
+        res => {
+          const data = res.data
+          this.roleName = data.roleName
         }
       )
     },
     onUpdateUser() {
-      this.form.role = this.roleTypeVaule
-      updateUserInfo(this.username_update, this.form).then(
+      updateUserInfo(this.username, this.form).then(
         res => {
           if (res.success) {
             Message({

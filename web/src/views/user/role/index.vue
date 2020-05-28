@@ -29,18 +29,18 @@
       border
       fit
       highlight-current-row
-      style="width: 40%;"
+      style="width: 521px;"
       @selection-change="handleSelectionChange"
     >
       <el-table-column
         type="selection"
         width="40"
       />
-      <el-table-column label="ID" type="index" align="center" />
-      <el-table-column label="角色" prop="role" align="center" />
-      <el-table-column label="名称" prop="roleName" align="center">
+      <el-table-column label="ID" type="index" align="center" width="40"/>
+      <el-table-column label="角色" prop="role" align="center" width="120"/>
+      <el-table-column label="名称" prop="roleName" align="center" width="120">
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
         <template slot-scope="{row}">
           <el-button size="mini" type="primary" @click="handleUpdateRole(row.role)">
             编辑

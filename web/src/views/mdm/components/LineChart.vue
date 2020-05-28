@@ -61,10 +61,10 @@ export default {
       this.chart = echarts.init(this.$el, 'macarons')
       this.setOptions(this.chartData)
     },
-    setOptions({ expectedData, actualData } = {}) {
+    setOptions({ autoTransPercent, assistTransPercent, transDataPercent, transFailPercent, transCorrectPercent } = {}) {
       this.chart.setOption({
         xAxis: {
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          data: ['2019-01-01', '2019-02-01', '2019-03-01', '2019-04-01', '2019-05-01', '2019-06-01', '2019-07-01', '2019-08-01', '2019-09-01', '2019-10-01'],
           boundaryGap: false,
           axisTick: {
             show: false
@@ -90,10 +90,10 @@ export default {
           }
         },
         legend: {
-          data: ['expected', 'actual']
+          data: ['自动译码率', '辅助译码率', '译出率', '译码失败率', '译码正确率']
         },
         series: [{
-          name: 'expected', itemStyle: {
+          name: '自动译码率', itemStyle: {
             normal: {
               color: '#FF005A',
               lineStyle: {
@@ -104,12 +104,12 @@ export default {
           },
           smooth: true,
           type: 'line',
-          data: expectedData,
+          data: autoTransPercent,
           animationDuration: 2800,
           animationEasing: 'cubicInOut'
         },
         {
-          name: 'actual',
+          name: '辅助译码率',
           smooth: true,
           type: 'line',
           itemStyle: {
@@ -124,7 +124,67 @@ export default {
               }
             }
           },
-          data: actualData,
+          data: assistTransPercent,
+          animationDuration: 2800,
+          animationEasing: 'quadraticOut'
+        },
+        {
+          name: '译出率',
+          smooth: true,
+          type: 'line',
+          itemStyle: {
+            normal: {
+              color: '#FFFF00',
+              lineStyle: {
+                color: '#FFFF00',
+                width: 2
+              },
+              areaStyle: {
+                color: '#f3f8ff'
+              }
+            }
+          },
+          data: transDataPercent,
+          animationDuration: 2800,
+          animationEasing: 'quadraticOut'
+        },
+        {
+          name: '译码失败率',
+          smooth: true,
+          type: 'line',
+          itemStyle: {
+            normal: {
+              color: '#FF99FF',
+              lineStyle: {
+                color: '#FF99FF',
+                width: 2
+              },
+              areaStyle: {
+                color: '#f3f8ff'
+              }
+            }
+          },
+          data: transFailPercent,
+          animationDuration: 2800,
+          animationEasing: 'quadraticOut'
+        },
+        {
+          name: '译码正确率',
+          smooth: true,
+          type: 'line',
+          itemStyle: {
+            normal: {
+              color: '#66FFFF',
+              lineStyle: {
+                color: '#66FFFF',
+                width: 2
+              },
+              areaStyle: {
+                color: '#f3f8ff'
+              }
+            }
+          },
+          data: transCorrectPercent,
           animationDuration: 2800,
           animationEasing: 'quadraticOut'
         }]

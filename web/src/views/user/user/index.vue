@@ -40,23 +40,23 @@
       border
       fit
       highlight-current-row
-      style="width: 65%;"
+      style="width: 860px;"
       @selection-change="handleSelectionChange"
     >
       <el-table-column
         type="selection"
         width="40"
       />
-      <el-table-column label="ID" type="index" align="center" />
-      <el-table-column label="用户名" prop="username" align="center"/>
-      <el-table-column label="角色" align="center">
+      <el-table-column label="ID" type="index" align="center" width="40"/>
+      <el-table-column label="用户名" prop="username" align="center" width="120"/>
+      <el-table-column label="角色" align="center" width="120">
         <template slot-scope="{row}">
           <span v-if="row.roles[0]==='admin'"><el-tag>管理员</el-tag></span>
           <span v-else>{{ getRoleName(row.roles[0]) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="邮箱" prop="email" align="center" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="邮箱" prop="email" align="center" width="300"/>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240">
         <template slot-scope="{row}">
           <el-button size="mini" type="primary" @click="handleUpdateUser(row.username)">
             编辑

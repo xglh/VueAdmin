@@ -10,7 +10,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from common.user_auth import UserPermission
+from common.user_auth import UserRolePermission
 from user.serializers.role_serializer import SysRoleCreateSerializer, SysRoleUpdateSerializer, SysRoleInfoSerializer
 from user.models import SysRole
 from VueAdmin.base import BaseResponse, MyPageNumberPagination
@@ -23,7 +23,7 @@ class SysRoleCreateView(APIView):
     perms_map = {
         '*': ['admin']
     }
-    permission_classes = [UserPermission]
+    permission_classes = [UserRolePermission]
 
     def post(self, request):
         response = BaseResponse()
@@ -43,7 +43,7 @@ class SysRoleInfoView(APIView):
     perms_map = {
         'delete': ['admin']
     }
-    permission_classes = [UserPermission]
+    permission_classes = [UserRolePermission]
 
     # 获取角色信息
     def get(self, request, role):
@@ -101,7 +101,7 @@ class SysRolesView(APIView):
     perms_map = {
         'delete': ['admin']
     }
-    permission_classes = [UserPermission]
+    permission_classes = [UserRolePermission]
 
     # 获取角色信息列表
     def get(self, request):

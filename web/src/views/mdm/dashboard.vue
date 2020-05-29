@@ -1,22 +1,25 @@
 <template>
   <div class="dashboard-editor-container">
     <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-      <div style="text-align: center">译码数据</div>
-      <div style="margin-left: 40px;margin-top: 10px">
-        <span>选择品牌：</span>
+      <div style="text-align: center"><h3>译码数据</h3></div>
+      <div style="margin-left: 40px;margin-top: 20px">
+        <span style="margin-left: 0px">选择品牌：</span>
         <el-select v-model="brandOptionValue" placeholder="选择品牌" clearable style="width: 120px;margin-left: 0px" class="filter-item">
           <el-option v-for="item in brandOptions" :key="item.key" :label="item.label" :value="item.value" />
         </el-select>
         <span style="margin-left: 30px">选择日期：</span>
         <el-date-picker
-          v-model="value1"
+          v-model="dateValue"
           type="daterange"
           range-separator="至"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
         />
+        <el-button class="filter-item" style="margin-left: 720px" type="primary" icon="el-icon-download" @click="handleExportData">
+        导出数据
+      </el-button>
       </div>
-      <line-chart :chart-data="lineChartData" style="margin-top: 10px" />
+      <line-chart :chart-data="lineChartData" style="margin-top: 20px" />
     </el-row>
 
   </div>
@@ -65,13 +68,15 @@ export default {
           label: '宝马'
         }
 
-      ]
+      ],
+      dateValue: ''
     }
   },
   methods: {
     handleSetLineChartData(type) {
       this.lineChartData = lineChartData[type]
-    }
+    },
+    handleExportData() {}
   }
 }
 </script>

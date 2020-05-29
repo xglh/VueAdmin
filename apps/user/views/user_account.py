@@ -9,6 +9,8 @@ import traceback
 from rest_framework.exceptions import NotFound
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from common.user_auth import UserPermission
 from user.serializers.user_serializer import SysUserCreateSerializer, SysUserUpdateSerializer, SysUserInfoSerializer
 from user.models import SysUser
 from VueAdmin.base import BaseResponse, MyPageNumberPagination
@@ -18,6 +20,10 @@ logger = logging.getLogger('mylogger')
 
 # 创建用户
 class SysUserCreateView(APIView):
+    perms_map = {
+        '*': ['admin']
+    }
+    permission_classes = [UserPermission]
 
     def post(self, request):
         response = BaseResponse()
@@ -34,6 +40,10 @@ class SysUserCreateView(APIView):
 
 
 class SysUserInfoView(APIView):
+    perms_map = {
+        'delete': ['admin']
+    }
+    permission_classes = [UserPermission]
 
     # 获取用户信息
     def get(self, request, userName):
@@ -88,6 +98,10 @@ class SysUserInfoView(APIView):
 
 
 class SysUserUsersView(APIView):
+    perms_map = {
+        '*': ['admin']
+    }
+    permission_classes = [UserPermission]
 
     # 获取用户信息列表
     def get(self, request):
@@ -128,7 +142,7 @@ class SysUserUsersView(APIView):
             try:
                 assert type(body) == list
             except Exception:
-                response.set_error_response(400,message='参数类型错误')
+                response.set_error_response(400, message='参数类型错误')
             else:
                 SysUser.objects.filter(username__in=body).delete()
         except Exception as e:

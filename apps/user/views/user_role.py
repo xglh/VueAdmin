@@ -9,6 +9,8 @@ import traceback
 from rest_framework.exceptions import NotFound
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from common.user_auth import UserPermission
 from user.serializers.role_serializer import SysRoleCreateSerializer, SysRoleUpdateSerializer, SysRoleInfoSerializer
 from user.models import SysRole
 from VueAdmin.base import BaseResponse, MyPageNumberPagination
@@ -18,6 +20,10 @@ logger = logging.getLogger('mylogger')
 
 # 创建角色
 class SysRoleCreateView(APIView):
+    perms_map = {
+        '*': ['admin']
+    }
+    permission_classes = [UserPermission]
 
     def post(self, request):
         response = BaseResponse()
@@ -34,6 +40,10 @@ class SysRoleCreateView(APIView):
 
 
 class SysRoleInfoView(APIView):
+    perms_map = {
+        'delete': ['admin']
+    }
+    permission_classes = [UserPermission]
 
     # 获取角色信息
     def get(self, request, role):
@@ -71,7 +81,7 @@ class SysRoleInfoView(APIView):
             logger.error(traceback.format_exc())
         return Response(response.to_json())
 
-    # 删除用户
+    # 删除角色
     def delete(self, request, role):
         response = BaseResponse()
         try:
@@ -88,6 +98,10 @@ class SysRoleInfoView(APIView):
 
 
 class SysRolesView(APIView):
+    perms_map = {
+        'delete': ['admin']
+    }
+    permission_classes = [UserPermission]
 
     # 获取角色信息列表
     def get(self, request):
@@ -121,7 +135,7 @@ class SysRolesView(APIView):
             try:
                 assert type(body) == list
             except Exception:
-                response.set_error_response(400,message='参数类型错误')
+                response.set_error_response(400, message='参数类型错误')
             else:
                 SysRole.objects.filter(role__in=body).delete()
         except Exception as e:

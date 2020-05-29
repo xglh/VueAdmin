@@ -17,9 +17,10 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from VueAdmin.base import BaseResponse
-from rest_framework import HTTP_HEADER_ENCODING
 
 # token过期时间
+from common.request_info import get_authorization_header
+
 EXPIRE_MINUTES = settings.REST_FRAMEWORK_TOKEN_EXPIRE_MINUTES
 logger = logging.getLogger('mylogger')
 
@@ -66,27 +67,7 @@ class UserLoginView(ObtainAuthToken):
         return Response(response.to_json())
 
 
-# 获取请求头里的token信息
-def get_authorization_header(request):
-    """
-    Return request's 'Authorization:' header, as a bytestring.
 
-    Hide some test client ickyness where the header can be unicode.
-    """
-    has_token, token = False, ''
-    auth = request.META.get('HTTP_AUTHORIZATION', b'')
-    if isinstance(auth, type('')):
-        # Work around django test client oddness
-        auth = auth.encode(HTTP_HEADER_ENCODING)
-
-    auth_str = str(auth, encoding='utf-8')
-    # 解析token
-    p = re.compile('Token\s*(\S*)')
-    f = p.findall(auth_str)
-    if len(f) > 0:
-        has_token = True
-        token = f[0]
-    return has_token, token
 
 
 class UserLogoutView(APIView):

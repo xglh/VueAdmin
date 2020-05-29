@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2020/5/27 15:25
 # @Author  : liuhui
-# @Detail  :
+# @Detail  : 基础model
 import django.utils.timezone as timezone
 from django.db import models
 

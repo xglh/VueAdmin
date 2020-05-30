@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from common.base_model import BaseModel
 
+
 # role_choice = (('admin', 'admin'), ('editor', 'editor'))
 
 
@@ -21,7 +22,8 @@ class SysRole(BaseModel):
 
 # 用户表
 class SysUser(AbstractUser):
-    role = models.CharField(max_length=255, verbose_name=u'角色')
+    role_id = models.ForeignKey(SysRole, null=True, blank=True, on_delete=models.SET_NULL, db_column=u'role_id',
+                                verbose_name=u'角色id')
     email = models.CharField(max_length=255, default='', verbose_name=u'邮箱')
     phone = models.CharField(max_length=255, default='', verbose_name=u'电话')
     avatar = models.CharField(max_length=255, default='', verbose_name=u'头像地址')

@@ -1,16 +1,17 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      角色类型：
+      <span>角色类型：</span>
       <el-select
-        v-model="roleTypeVaule"
+        v-model="roleIdVaule"
         labal=""
         style="width: 140px"
         class="filter-item"
         placeholder="角色类型"
+        size="mini"
         @change="handleRoleTypeFilter"
       >
-        <el-option v-for="item in roleTypeOptinos" :key="item.key" :label="item.label" :value="item.value" />
+        <el-option v-for="item in roleIdOptinos" :key="item.key" :label="item.label" :value="item.value" />
       </el-select>
       <el-button
         v-waves
@@ -18,6 +19,7 @@
         type="primary"
         style="margin-left: 10px;"
         icon="el-icon-plus"
+        size="mini"
         @click="handleCreateUser"
       >
         新增用户
@@ -28,6 +30,7 @@
         type="danger"
         icon="el-icon-delete"
         @click="handleDeleteUsers"
+        size="mini"
       >
         删除用户
       </el-button>
@@ -40,7 +43,7 @@
       border
       fit
       highlight-current-row
-      style="width: 860px;"
+      style="width: 861px;"
       @selection-change="handleSelectionChange"
     >
       <el-table-column
@@ -100,8 +103,8 @@ export default {
         page: 1,
         size: 20
       },
-      roleTypeVaule: '',
-      roleTypeOptinos: [
+      roleIdVaule: '',
+      roleIdOptinos: [
         {
           value: '',
           label: '全部'
@@ -117,24 +120,27 @@ export default {
   methods: {
     fetchData: async function() {
       this.listLoading = true
+      setTimeout(() => {
+        this.listLoading = false
+      }, 1.5 * 1000)
       await this.getRoleList()
       this.getUserInfoList()
       this.listLoading = false
     },
     getRoleList() {
-      getRoles(this.listQuery.page, this.listQuery.size).then(response => {
+      getRoles().then(response => {
         var roleList = response.data.rows
         roleList.forEach(data => {
           this.roleNameInfo[data.role] = data.roleName
-          this.roleTypeOptinos.push({
-            value: data.role,
+          this.roleIdOptinos.push({
+            value: data.id,
             label: data.roleName
           })
         })
       })
     },
     getUserInfoList() {
-      getUsers(this.roleTypeVaule, this.listQuery.page, this.listQuery.size).then(response => {
+      getUsers(this.roleIdVaule, this.listQuery.page, this.listQuery.size).then(response => {
         this.userInfoList = response.data.rows
         this.total = response.data.total
         this.listLoading = false

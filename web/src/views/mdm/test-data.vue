@@ -90,7 +90,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      getRoles(this.listQuery.page, this.listQuery.size).then(response => {
+      getRoles().then(response => {
         this.roleList = response.data.rows
         this.total = response.data.total
         this.listLoading = false

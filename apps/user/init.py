@@ -22,15 +22,15 @@ from django.contrib.auth.hashers import make_password, check_password
 
 # 创建系统角色
 
-SysRole.objects.create(role='admin',role_name='管理员')
-SysRole.objects.create(role='editor',role_name='普通用户')
+admin_role = SysRole.objects.create(role='admin',role_name='管理员')
+editor_role = SysRole.objects.create(role='editor',role_name='普通用户')
 
 admin_user = SysUser.objects.create(username='admin', password=make_password('123456'), email='1318633361@qq.com',
                                     nick_name='admin',
-                                    role='admin')
+                                    role_id=admin_role)
 for i in range(1, 40):
     edit_user = SysUser.objects.create(username='editor{}'.format(i), password=make_password('123456'),
                                        email='1318633361@qq.com', nick_name='editor{}'.format(i),
-                                       role='editor')
+                                       role_id=editor_role)
 # admin_user = SysUser.objects.get(username='admin')
 # print(check_password('admin2020',admin_user.password))

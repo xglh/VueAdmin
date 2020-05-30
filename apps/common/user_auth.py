@@ -30,7 +30,7 @@ class UserRolePermission(BasePermission):
                 try:
                     auth_obj = Token.objects.get(key=token)
                     user = SysUser.objects.get(id=auth_obj.user_id)
-                    user_role = user.role
+                    user_role = user.role_id.role
                 except Exception:
                     user_role = None
 

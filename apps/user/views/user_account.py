@@ -111,9 +111,9 @@ class SysUserUsersView(APIView):
 
             # roleType过滤
             params = request.GET
-            role_type = params.get('role_type')
-            if role_type:
-                user_qs = user_qs.filter(role=role_type)
+            role_id = params.get('role_id')
+            if role_id:
+                user_qs = user_qs.filter(role_id=role_id)
             user_qs = user_qs.order_by('id')
 
             data_list, total = [], user_qs.count()

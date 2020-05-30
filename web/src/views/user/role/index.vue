@@ -7,6 +7,7 @@
         type="primary"
         style="margin-left: 10px;"
         icon="el-icon-plus"
+        size="mini"
         @click="handleCreateRole"
       >
         新增角色
@@ -16,6 +17,7 @@
         style="margin-left: 10px;"
         type="danger"
         icon="el-icon-delete"
+        size="mini"
         @click="handleDeleteRoles"
       >
         删除角色
@@ -36,10 +38,9 @@
         type="selection"
         width="40"
       />
-      <el-table-column label="ID" type="index" align="center" width="40"/>
-      <el-table-column label="角色" prop="role" align="center" width="120"/>
-      <el-table-column label="名称" prop="roleName" align="center" width="120">
-      </el-table-column>
+      <el-table-column label="ID" type="index" align="center" width="40" />
+      <el-table-column label="角色" prop="role" align="center" width="120" />
+      <el-table-column label="名称" prop="roleName" align="center" width="120" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
         <template slot-scope="{row}">
           <el-button size="mini" type="primary" @click="handleUpdateRole(row.role)">
@@ -90,6 +91,9 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
+      setTimeout(() => {
+        this.listLoading = false
+      }, 1.5 * 1000)
       getRoles(this.listQuery.page, this.listQuery.size).then(response => {
         this.roleList = response.data.rows
         this.total = response.data.total

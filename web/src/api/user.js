@@ -22,8 +22,8 @@ export function getRoles(page, size) {
     url: '/api/user/roles',
     method: 'get',
     params: {
-      page: page,
-      size: size || 20
+      page: page || 1,
+      size: size || 100
     }
   })
 }
@@ -73,12 +73,12 @@ export function deleteRole(role) {
 }
 
 // 获取用户列表
-export function getUsers(roleType, page, size) {
+export function getUsers(roleId, page, size) {
   return request({
     url: '/api/user/users',
     method: 'get',
     params: {
-      roleType: roleType,
+      roleId: roleId,
       page: page,
       size: size || 20
     }

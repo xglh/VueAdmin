@@ -1,49 +1,57 @@
 <template>
   <div class="app-container" style="width: 100%">
     <el-card style="margin-left:250px;width:50%">
-    <el-form ref="form" :model="form" :rules="rules" :status-icon="status_icon" label-width="100px" style="margin-top: 20px;margin-left:30px;width: 60%">
-      <el-form-item label="用户名：" prop="username">
-        <el-input v-model="form.username" placeholder="3-24位长度" />
-      </el-form-item>
-      <el-form-item label="密码：" prop="password">
-        <el-input v-model="form.password" placeholder="6-24位长度" type="password" />
-      </el-form-item>
-      <el-form-item label="确认密码：" prop="re_password">
-        <el-input v-model="form.re_password" placeholder="6-24位长度" type="password" />
-      </el-form-item>
-      <el-form-item label="角色：" prop="role">
-        <el-select v-model="roleTypeVaule" placeholder="请选择" style="width: 100%">
-          <el-option
-            v-for="item in roleTypeOptinos"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="手机号：" prop="phone">
-        <el-input v-model="form.phone" />
-      </el-form-item>
-      <el-form-item label="邮箱：" prop="email">
-        <el-input v-model="form.email" />
-      </el-form-item>
-      <el-form-item style="margin-left: 20px">
-        <el-button type="primary" @click="onCreateUser">创建</el-button>
-        <el-button style="margin-left: 60px" @click="onReset">重置</el-button>
-      </el-form-item>
-    </el-form>
+      <el-form
+        ref="form"
+        :model="form"
+        :rules="rules"
+        :status-icon="status_icon"
+        label-width="100px"
+        style="margin-top: 20px;margin-left:30px;width: 60%"
+      >
+        <el-form-item label="用户名：" prop="username">
+          <el-input v-model="form.username" placeholder="3-24位长度" />
+        </el-form-item>
+        <el-form-item label="密码：" prop="password">
+          <el-input v-model="form.password" placeholder="6-24位长度" type="password" />
+        </el-form-item>
+        <el-form-item label="确认密码：" prop="re_password">
+          <el-input v-model="form.re_password" placeholder="6-24位长度" type="password" />
+        </el-form-item>
+        <el-form-item label="角色：" prop="role">
+          <el-select v-model="roleIdVaule" placeholder="请选择" style="width: 100%">
+            <el-option
+              v-for="item in roleIdOptinos"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="手机号：" prop="phone">
+          <el-input v-model="form.phone" />
+        </el-form-item>
+        <el-form-item label="邮箱：" prop="email">
+          <el-input v-model="form.email" />
+        </el-form-item>
+        <el-form-item style="margin-left: 20px">
+          <el-button type="primary" @click="onCreateUser">创建</el-button>
+          <el-button style="margin-left: 60px" @click="onReset">重置</el-button>
+        </el-form-item>
+      </el-form>
     </el-card>
   </div>
 </template>
 <script>
-import { createUser } from '@/api/user'
+import { createUser, getRoles } from '@/api/user'
 import { Message } from 'element-ui'
+
 export default {
   name: 'UserCreate',
   data() {
     // 自定义phone校验
     var validate_role = (rule, value, callback) => {
-      if (this.roleTypeVaule === '') {
+      if (this.roleIdVaule === '') {
         callback(new Error('请选中角色'))
       }
       callback()
@@ -71,22 +79,13 @@ export default {
     }
     return {
       roleValue: '',
-      roleTypeVaule: '',
-      roleTypeOptinos: [
-        {
-          value: 'admin',
-          label: '管理员'
-        },
-        {
-          value: 'editor',
-          label: '普通用户'
-        }
-      ],
+      roleIdVaule: '',
+      roleIdOptinos: [],
       form: {
         username: '',
         password: '',
         re_password: '',
-        role: '',
+        role_id: '',
         phone: '',
         email: ''
       },
@@ -117,12 +116,25 @@ export default {
   },
   created() {
     // 组件创建完后获取数据，
+    this.getRoleList()
   },
   methods: {
+    getRoleList() {
+      getRoles().then(response => {
+        var roleList = response.data.rows
+        roleList.forEach(data => {
+          // this.roleNameInfo[data.role] = data.roleName
+          this.roleIdOptinos.push({
+            value: data.id,
+            label: data.roleName
+          })
+        })
+      })
+    },
     onCreateUser() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          this.form.role = this.roleTypeVaule
+          this.form.role_id = this.roleIdVaule
           createUser(this.form).then(
             res => {
               if (res.success) {

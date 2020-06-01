@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    'user'
+    'rbac'
 ]
 
 
@@ -83,7 +83,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 参数命名转换
-    'middlewares.request_params_format.FormatReqParamsMiddleware'
+    # 'middlewares.request_params_format.FormatReqParamsMiddleware'
 ]
 
 ROOT_URLCONF = 'VueAdmin.urls'
@@ -139,14 +139,18 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',  # 必须有
+        'rest_framework.permissions.AllowAny',
+        # 'rest_framework.permissions.IsAuthenticated',  # 必须有
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+        "rest_framework.authentication.BasicAuthentication",  #
+        "rest_framework.authentication.SessionAuthentication",  #
     ),
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
     # 自定义异常处理类
     'EXCEPTION_HANDLER': (
-        'VueAdmin.exceptions.rest_exception_handler'
+        'apps.common.custom.xops_exception_handler'
     )
 }
 
@@ -166,10 +170,16 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
-
-STATIC_URL = '/static/'
+BASE_API = 'http://localhost:9000/'
 # 自定义user表
-AUTH_USER_MODEL = "user.SysUser"
+AUTH_USER_MODEL = "rbac.UserProfile"
 # AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend')
 # token过期时间
 REST_FRAMEWORK_TOKEN_EXPIRE_MINUTES = 60 * 24
+
+STATIC_URL = "/be-static/"
+
+MEDIA_URL = "/be-media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "be-media")
+# STATIC_ROOT = os.path.join(BASE_DIR, "be-static")
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "be-static"),)  # 首选project静态文件搜寻路径

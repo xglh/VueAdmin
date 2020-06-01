@@ -1,0 +1,240 @@
+[
+  {
+    "model": "rbac.menu",
+    "pk": 1,
+    "fields": {
+      "name": "系统管理",
+      "icon": "system",
+      "path": "system",
+      "is_frame": false,
+      "is_show": true,
+      "sort": 0,
+      "component": null,
+      "pid": null
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 2,
+    "fields": {
+      "name": "用户管理",
+      "icon": "user",
+      "path": "users",
+      "is_frame": false,
+      "is_show": true,
+      "sort": 11,
+      "component": "system/user/index",
+      "pid": 1
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 3,
+    "fields": {
+      "name": "菜单管理",
+      "icon": "caidan",
+      "path": "menus",
+      "is_frame": false,
+      "is_show": true,
+      "sort": 12,
+      "component": "system/menu/index",
+      "pid": 1
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 4,
+    "fields": {
+      "name": "角色管理",
+      "icon": "role",
+      "path": "roles",
+      "is_frame": false,
+      "is_show": true,
+      "sort": 14,
+      "component": "system/role/index",
+      "pid": 1
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 5,
+    "fields": {
+      "name": "权限管理",
+      "icon": "permission",
+      "path": "permissions",
+      "is_frame": false,
+      "is_show": true,
+      "sort": 13,
+      "component": "system/permission/index",
+      "pid": 1
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 6,
+    "fields": {
+      "name": "组织架构",
+      "icon": "zuzhi",
+      "path": "organizations",
+      "is_frame": false,
+      "is_show": true,
+      "sort": 15,
+      "component": "system/organization/index",
+      "pid": 1
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 7,
+    "fields": {
+      "name": "配置中心",
+      "icon": "peizhi",
+      "path": "cmdb",
+      "is_frame": false,
+      "is_show": true,
+      "sort": 1,
+      "component": "",
+      "pid": null
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 8,
+    "fields": {
+      "name": "数据字典",
+      "icon": "zidian",
+      "path": "dicts",
+      "is_frame": false,
+      "is_show": true,
+      "sort": 11,
+      "component": "cmdb/dict/index",
+      "pid": 7
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 9,
+    "fields": {
+      "name": "设备管理",
+      "icon": "zujian",
+      "path": "devices",
+      "is_frame": false,
+      "is_show": true,
+      "sort": 112,
+      "component": "cmdb/device/index",
+      "pid": 7
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 10,
+    "fields": {
+      "name": "【页面】设备新增",
+      "sort": 999,
+      "path": "devices/create",
+      "component": "cmdb/device/form",
+      "is_show": false,
+      "is_frame": false,
+      "pid": 7,
+      "icon": ""
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 11,
+    "fields": {
+      "name": "【页面】设备详情",
+      "sort": 999,
+      "path": "devices/detail",
+      "component": "cmdb/device/form",
+      "is_show": false,
+      "is_frame": false,
+      "pid": 7,
+      "icon": ""
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 12,
+    "fields": {
+      "name": "标签管理",
+      "icon": "chain",
+      "path": "labels",
+      "is_frame": false,
+      "is_show": true,
+      "sort": 16,
+      "component": "cmdb/label/index",
+      "pid": 7
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 13,
+    "fields": {
+      "name": "认证管理",
+      "icon": "password",
+      "path": "keys",
+      "is_frame": false,
+      "is_show": true,
+      "sort": 999,
+      "component": "cmdb/key/index.vue",
+      "pid": 7
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 14,
+    "fields": {
+      "name": "【页面】认证新增",
+      "icon": "",
+      "path": "keys/create",
+      "is_frame": false,
+      "is_show": false,
+      "sort": 999,
+      "component": "cmdb/key/form.vue",
+      "pid": 7
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 15,
+    "fields": {
+      "name": "【页面】认证详情",
+      "icon": "",
+      "path": "keys/detail",
+      "is_frame": false,
+      "is_show": false,
+      "sort": 999,
+      "component": "cmdb/key/form.vue",
+      "pid": 7
+    }
+  },
+   {
+    "model": "rbac.menu",
+    "pk": 16,
+    "fields": {
+      "name": "图片识别",
+      "icon": "image",
+      "path": "img-discern",
+      "is_frame": false,
+      "is_show": true,
+      "sort": 3,
+      "component": "",
+      "pid": null
+    }
+  },
+  {
+    "model": "rbac.menu",
+    "pk": 17,
+    "fields": {
+      "name": "图片数据集",
+      "icon": "chart",
+      "path": "discern-data",
+      "is_frame": false,
+      "is_show": true,
+      "sort": 999,
+      "component": "discern/discern-data/index",
+      "pid": 16
+    }
+  }
+]

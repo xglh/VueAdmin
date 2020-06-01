@@ -1,0 +1,19 @@
+[
+    {
+        "model": "rbac.organization",
+        "pk": 1,
+        "fields": {
+            "name": "开思时代",
+            "type": "company"
+        }
+    },
+    {
+        "model": "rbac.organization",
+        "pk": 2,
+        "fields": {
+            "pid": 1,
+            "name": "测试部",
+            "type": "department"
+        }
+    }
+]

@@ -5,141 +5,80 @@
 # @Detail  :
 
 import logging
-import traceback
-from rest_framework.exceptions import NotFound
-from rest_framework.views import APIView
+from common.basic import BaseModelViewSet, MyPageNumberPagination, BaseResponse
 from rest_framework.response import Response
-
-from common.user_auth import UserRolePermission
-from user.serializers.role_serializer import SysRoleCreateSerializer, SysRoleUpdateSerializer, SysRoleInfoSerializer
+from common.custom import UserRolePermission
 from user.models import SysRole
-from VueAdmin.base import BaseResponse, MyPageNumberPagination
+from user.serializers.role_serializer import SysRoleSerializer, SysRoleCreateSerializer, SysRoleUpdateSerializer
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework.views import APIView
 
-logger = logging.getLogger('mylogger')
+logger = logging.getLogger()
 
 
-# 创建角色
-class SysRoleCreateView(APIView):
+class UserRoleViewSet(BaseModelViewSet):
+    """
+    UserAccount增删改查
+    """
     perms_map = {
         '*': ['admin']
     }
-    permission_classes = [UserRolePermission]
+    queryset = SysRole.objects.all().order_by('id')
+    serializer_class = SysRoleSerializer
+    pagination_class = MyPageNumberPagination
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('role', 'role_name')
+    ordering_fields = ('id',)
+    authentication_classes = (JSONWebTokenAuthentication,)
+    permission_classes = (UserRolePermission,)
 
-    def post(self, request):
-        response = BaseResponse()
-        try:
-            serializer = SysRoleCreateSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-            else:
-                response.set_error_response(code=400, message=serializer.errors)
-        except Exception as e:
-            response.set_http_500_response(message=str(e))
-            logger.error(traceback.format_exc())
-        return Response(response.to_json())
+    # 根据action定义
+    def get_serializer_class(self):
+        serializer_class = SysRoleSerializer
+        # 新建用户
+        if self.action == 'create':
+            serializer_class = SysRoleCreateSerializer
+        # 更新用户信息
+        elif self.action == 'update':
+            serializer_class = SysRoleUpdateSerializer
+        return serializer_class
 
 
-class SysRoleInfoView(APIView):
+class UserRoleListDataApiView(APIView):
+    '''
+    获取所有角色
+    '''
     perms_map = {
-        'delete': ['admin']
+        '*': ['admin']
     }
-    permission_classes = [UserRolePermission]
+    authentication_classes = (JSONWebTokenAuthentication,)
+    permission_classes = (UserRolePermission,)
 
-    # 获取角色信息
-    def get(self, request, role):
-        response = BaseResponse()
-        try:
-            try:
-                user_qs = SysRole.objects.get(role=role)
-            except SysRole.DoesNotExist:
-                response.set_error_response(code=404, message='用户不存在')
-            else:
-                serializer = SysRoleInfoSerializer(user_qs)
-                response.data = serializer.data
-        except Exception as e:
-            response.set_http_500_response(message=str(e))
-            logger.error(traceback.format_exc())
-        return Response(response.to_json())
-
-    # 修改用户信息
-    def put(self, request, role):
-        response = BaseResponse()
-        try:
-            try:
-                user_qs = SysRole.objects.get(role=role)
-            except SysRole.DoesNotExist:
-                response.set_error_response(code=500, message='用户不存在')
-            else:
-
-                serializer = SysRoleUpdateSerializer(data=request.data, instance=user_qs)
-                if serializer.is_valid():
-                    serializer.save()
-                else:
-                    response.set_error_response(code=500, message=serializer.errors)
-        except Exception as e:
-            response.set_http_500_response(message=str(e))
-            logger.error(traceback.format_exc())
-        return Response(response.to_json())
-
-    # 删除角色
-    def delete(self, request, role):
-        response = BaseResponse()
-        try:
-            try:
-                user_qs = SysRole.objects.get(role=role)
-            except SysRole.DoesNotExist:
-                response.set_error_response(code=500, message='用户不存在')
-            else:
-                user_qs.delete()
-        except Exception as e:
-            response.set_http_500_response(message=str(e))
-            logger.error(traceback.format_exc())
-        return Response(response.to_json())
-
-
-class SysRolesView(APIView):
-    perms_map = {
-        'delete': ['admin']
-    }
-    permission_classes = [UserRolePermission]
-
-    # 获取角色信息列表
     def get(self, request):
         response = BaseResponse()
-        try:
+        sysRole_qs = SysRole.objects.all().order_by('id')
+        sysRole_serializer = SysRoleSerializer(sysRole_qs, many=True)
 
-            user_qs = SysRole.objects.all().order_by('id')
-            data_list, total = [], user_qs.count()
-            try:
-                page = MyPageNumberPagination()
-                pages_query_set = page.paginate_queryset(queryset=user_qs, request=request, view=self)
-                serializer = SysRoleInfoSerializer(instance=pages_query_set, many=True)
-                data_list = serializer.data
-            except NotFound:
-                data_list = []
-            response.data = {
-                'total': total,
-                'rows': data_list
-            }
-        except Exception as e:
-            response.set_http_500_response(message=str(e))
-            logger.error(traceback.format_exc())
-
+        response.data = sysRole_serializer.data
         return Response(response.to_json())
 
-    # 批量删除角色
+
+class UserRolesDeleteApiView(APIView):
+    '''
+    批量删除角色
+    '''
+    perms_map = {
+        '*': ['admin']
+    }
+    authentication_classes = (JSONWebTokenAuthentication,)
+    permission_classes = (UserRolePermission,)
+
     def delete(self, request):
         response = BaseResponse()
-        try:
-            body = request.data
-            try:
-                assert type(body) == list
-            except Exception:
-                response.set_error_response(400, message='参数类型错误')
-            else:
-                SysRole.objects.filter(role__in=body).delete()
-        except Exception as e:
-            response.set_http_500_response(message=str(e))
-            logger.error(traceback.format_exc())
-
+        role_ids = request.data
+        if type(role_ids) != list:
+            response.set_error_response(code=400, message='参数校验失败')
+        else:
+            SysRole.objects.filter(id__in=role_ids).delete()
         return Response(response.to_json())

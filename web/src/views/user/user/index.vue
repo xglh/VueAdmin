@@ -1,64 +1,29 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <span>角色类型：</span>
-      <el-select
-        v-model="roleIdVaule"
-        labal=""
-        style="width: 140px"
-        class="filter-item"
-        placeholder="角色类型"
-        size="mini"
-        @change="handleRoleTypeFilter"
-      >
-        <el-option v-for="item in roleIdOptinos" :key="item.key" :label="item.label" :value="item.value" />
-      </el-select>
-      <el-button
-        v-waves
-        class="filter-item"
-        type="primary"
-        style="margin-left: 10px;"
-        icon="el-icon-plus"
-        size="mini"
-        @click="handleCreateUser"
-      >
-        新增用户
-      </el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="danger"
-        icon="el-icon-delete"
-        @click="handleDeleteUsers"
-        size="mini"
-      >
-        删除用户
-      </el-button>
-    </div>
-
+    <UserCreateHeader :list-query="listQuery" :delete-user-list="deleteUserList" />
     <el-table
       :key="tableKey"
       v-loading="listLoading"
-      :data="userInfoList"
+      :data="userList"
       border
       fit
       highlight-current-row
-      style="width: 861px;"
+      style="width: 100%;margin-top: 15px;"
       @selection-change="handleSelectionChange"
     >
       <el-table-column
         type="selection"
         width="40"
       />
-      <el-table-column label="ID" type="index" align="center" width="40"/>
-      <el-table-column label="用户名" prop="username" align="center" width="120"/>
-      <el-table-column label="角色" align="center" width="120">
+      <el-table-column label="ID" type="index" align="center" width="40" />
+      <el-table-column label="用户名" prop="username" align="center" />
+      <el-table-column label="角色" align="center">
         <template slot-scope="{row}">
           <span v-if="row.roles[0]==='admin'"><el-tag>管理员</el-tag></span>
           <span v-else>{{ getRoleName(row.roles[0]) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="邮箱" prop="email" align="center" width="300"/>
+      <el-table-column label="邮箱" prop="email" align="center" width="300" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240">
         <template slot-scope="{row}">
           <el-button size="mini" type="primary" @click="handleUpdateUser(row.username)">
@@ -88,20 +53,22 @@ import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import { getUsers, deleteUser, deleteUsers, getRoles, updateUserInfo } from '@/api/user'
 import { Message } from 'element-ui'
-
+import UserCreateHeader from './module/index-header'
 export default {
   name: 'UserList',
-  components: { Pagination },
+  components: { Pagination, UserCreateHeader },
   directives: { waves },
   data() {
     return {
       tableKey: 0,
-      userInfoList: [],
+      userList: [],
       total: 0,
       listLoading: true,
       listQuery: {
         page: 1,
-        size: 20
+        size: 10,
+        search: '',
+        ordering: ''
       },
       roleIdVaule: '',
       roleIdOptinos: [
@@ -122,10 +89,9 @@ export default {
       this.listLoading = true
       setTimeout(() => {
         this.listLoading = false
-      }, 1.5 * 1000)
+      }, 5 * 1000)
       await this.getRoleList()
       this.getUserInfoList()
-      this.listLoading = false
     },
     getRoleList() {
       getRoles().then(response => {
@@ -141,7 +107,7 @@ export default {
     },
     getUserInfoList() {
       getUsers(this.roleIdVaule, this.listQuery.page, this.listQuery.size).then(response => {
-        this.userInfoList = response.data.rows
+        this.userList = response.data.rows
         this.total = response.data.total
         this.listLoading = false
       })
@@ -152,9 +118,6 @@ export default {
     handleRoleTypeFilter() {
       this.listQuery.page = 1
       this.getUserInfoList()
-    },
-    handleCreateUser() {
-      this.$router.push({ name: 'user-create' })
     },
     handleDeleteUsers() {
       var deleteUserNameList = []
@@ -190,9 +153,6 @@ export default {
         }).catch(() => {
         })
       }
-    },
-    handleUpdateUser(username) {
-      this.$router.push({ name: 'user-update', params: { username: username }})
     },
     handleDeleteUser(username) {
       this.$confirm('确认删除选中用户?', '提示', {

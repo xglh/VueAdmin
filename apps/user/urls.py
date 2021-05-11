@@ -4,27 +4,26 @@
 # @Author  : liuhui
 # @Detail  : user路由
 
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
+from user.views.user_login import UserAuthView, UserLogoutView
 
-from user.views.user_login import UserLoginView, UserLogoutView
-from user.views.user_account import SysUserCreateView, SysUserInfoView, SysUserUsersView
-from user.views.user_role import SysRoleCreateView, SysRoleInfoView, SysRolesView
+from user.views.user_role import UserRoleViewSet, UserRoleListDataApiView, UserRolesDeleteApiView
+from user.views.user_account import UserAccountViewSet
+
+router = routers.SimpleRouter()
+router.register(r"roles", UserRoleViewSet, base_name="roles")
+router.register(r"users", UserAccountViewSet, base_name="users")
 
 urlpatterns = [
     # 登录
-    path(r'login', UserLoginView.as_view()),
+    path(r'login/', UserAuthView.as_view()),
     # 登出
-    path(r'logout', UserLogoutView.as_view()),
-    # 获取role信息列表
-    path('roles', SysRolesView.as_view()),
-    # 新增role
-    path('role', SysRoleCreateView.as_view()),
-    # role接口
-    path('role/<str:role>', SysRoleInfoView.as_view()),
+    path(r'logout/', UserLogoutView.as_view()),
+    # 获取所有角色
+    path(r'roles/all/', UserRoleListDataApiView.as_view()),
+    # 批量删除角色
+    path(r'roles/del/', UserRolesDeleteApiView.as_view()),
     # 获取user信息列表
-    path('users', SysUserUsersView.as_view()),
-    # 新增user
-    path('user', SysUserCreateView.as_view()),
-    # user接口
-    path('user/<str:userName>', SysUserInfoView.as_view()),
+    path(r"", include(router.urls)),
 ]

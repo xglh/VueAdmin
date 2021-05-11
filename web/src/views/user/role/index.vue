@@ -1,37 +1,13 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <el-button
-        v-waves
-        class="filter-item"
-        type="primary"
-        style="margin-left: 10px;"
-        icon="el-icon-plus"
-        size="mini"
-        @click="handleCreateRole"
-      >
-        新增角色
-      </el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="danger"
-        icon="el-icon-delete"
-        size="mini"
-        @click="handleDeleteRoles"
-      >
-        删除角色
-      </el-button>
-    </div>
+    <RoleIndexHeader :list-query="listQuery" :delete-role-list="deleteRoleList" />
 
     <el-table
-      :key="tableKey"
       v-loading="listLoading"
       :data="roleList"
       border
-      fit
       highlight-current-row
-      style="width: 521px;"
+      style="width: 100%;margin-top: 15px;"
       @selection-change="handleSelectionChange"
     >
       <el-table-column
@@ -39,25 +15,26 @@
         width="40"
       />
       <el-table-column label="ID" type="index" align="center" width="40" />
-      <el-table-column label="角色" prop="role" align="center" width="120" />
-      <el-table-column label="名称" prop="roleName" align="center" width="120" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
+      <el-table-column label="角色" prop="role" align="center" />
+      <el-table-column label="名称" prop="roleName" align="center" />
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button size="mini" type="primary" @click="handleUpdateRole(row.role)">
+          <el-button size="mini" type="primary" @click="handleUpdateRole(row)">
             编辑
           </el-button>
-          <el-button size="mini" type="danger" @click="handleDeleteRole(row.role)">
+          <el-button size="mini" type="danger" @click="handleDeleteRole(row.id)">
             删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
+    <RoleUpdateForm :update-dialog-form-visible.sync="updateDialogFormVisible" :update-role-info="updateRoleInfo" />
     <pagination
       v-show="total>0"
       :total="total"
       :page.sync="listQuery.page"
       :limit.sync="listQuery.size"
-      @pagination="getList"
+      @pagination="fetchData"
     />
   </div>
 </template>
@@ -65,12 +42,13 @@
 <script>
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import { getRoles, deleteRole, deleteRoles } from '@/api/user'
+import { getRoles, deleteRole } from '@/api/user'
 import { Message } from 'element-ui'
-
+import RoleIndexHeader from './module/index-header'
+import RoleUpdateForm from './module/role-update-form'
 export default {
   name: 'RoleList',
-  components: { Pagination },
+  components: { Pagination, RoleIndexHeader, RoleUpdateForm },
   directives: { waves },
   data() {
     return {
@@ -80,77 +58,46 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        size: 20
+        size: 10,
+        search: '',
+        ordering: ''
       },
-      deleteRoleList: []
+      deleteRoleList: [],
+      updateDialogFormVisible: false,
+      updateRoleInfo: this.getInitUpdateRoleInfo()
     }
   },
   created() {
-    this.getList()
+    this.fetchData()
   },
   methods: {
-    getList() {
+    fetchData() {
       this.listLoading = true
       setTimeout(() => {
         this.listLoading = false
-      }, 1.5 * 1000)
-      getRoles(this.listQuery.page, this.listQuery.size).then(response => {
+      }, 3 * 1000)
+      getRoles(this.listQuery.page, this.listQuery.size, this.listQuery.search, this.listQuery.ordering).then(response => {
         this.roleList = response.data.rows
         this.total = response.data.total
         this.listLoading = false
       })
     },
-    handleRoleTypeFilter() {
-      this.listQuery.page = 1
-      this.getList()
-    },
-    handleCreateRole() {
-      this.$router.push({ name: 'role-create' })
-    },
-    handleDeleteRoles() {
-      var targetDeleteRoleList = []
-      this.deleteRoleList.forEach(data => {
-        targetDeleteRoleList.push(data.role)
-      })
-      if (targetDeleteRoleList.length === 0) {
-        Message({
-          showClose: true,
-          message: '请至少选中一条记录',
-          duration: 1500,
-          type: 'error'
-        })
-      } else {
-        this.$confirm('确认删除选中角色?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          deleteRoles(targetDeleteRoleList).then(
-            res => {
-              if (res.success) {
-                Message({
-                  type: 'success',
-                  message: '删除成功!',
-                  duration: 1500
-                })
-                this.getList()
-              }
-            }
-          )
-        }).catch(() => {
-        })
+    handleUpdateRole(row) {
+      this.updateRoleInfo = {
+        roleId: row.id,
+        role: row.role,
+        roleName: row.roleName
       }
+
+      this.updateDialogFormVisible = true
     },
-    handleUpdateRole(role) {
-      this.$router.push({ name: 'role-update', params: { role: role }})
-    },
-    handleDeleteRole(role) {
+    handleDeleteRole(roleId) {
       this.$confirm('确认删除角色?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteRole(role).then(
+        deleteRole(roleId).then(
           res => {
             if (res.success) {
               Message({
@@ -158,7 +105,7 @@ export default {
                 message: '删除成功!',
                 duration: 1500
               })
-              this.getList()
+              this.fetchData()
             }
           }
         )
@@ -167,6 +114,13 @@ export default {
     },
     handleSelectionChange(val) {
       this.deleteRoleList = val
+    },
+    getInitUpdateRoleInfo() {
+      return {
+        roleId: 0,
+        role: '',
+        roleName: ''
+      }
     }
   }
 }

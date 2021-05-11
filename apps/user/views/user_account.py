@@ -5,148 +5,51 @@
 # @Detail  :
 
 import logging
-import traceback
-from rest_framework.exceptions import NotFound
-from rest_framework.views import APIView
-from rest_framework.response import Response
-
-from common.user_auth import UserRolePermission
-from user.serializers.user_serializer import SysUserCreateSerializer, SysUserUpdateSerializer, SysUserInfoSerializer
+from common.basic import BaseModelViewSet, MyPageNumberPagination
+from common.custom import UserRolePermission
 from user.models import SysUser
-from VueAdmin.base import BaseResponse, MyPageNumberPagination
+from user.serializers.user_serializer import SysUserCreateSerializer, SysUserUpdateSerializer, SysUserSerializer
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-logger = logging.getLogger('mylogger')
+logger = logging.getLogger()
 
 
-# 创建用户
-class SysUserCreateView(APIView):
+class UserAccountViewSet(BaseModelViewSet):
+    """
+    UserAccount增删改查
+    """
     perms_map = {
-        '*': ['admin']
+        # action: 角色列表； *代表所有
+        '*': ['admin'],
+        'retrieve': ['*'],
+        'update': ['*'],
+
     }
-    permission_classes = [UserRolePermission]
+    queryset = SysUser.objects.all().order_by('id')
+    serializer_class = SysUserSerializer
+    pagination_class = MyPageNumberPagination
+    filter_backends = (SearchFilter, OrderingFilter)
+    search_fields = ('username', 'nick_name')
+    ordering_fields = ('id', 'username')
+    authentication_classes = (JSONWebTokenAuthentication,)
+    permission_classes = (UserRolePermission,)
 
-    def post(self, request):
-        response = BaseResponse()
-        try:
-            serializer = SysUserCreateSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-            else:
-                response.set_error_response(code=400, message=serializer.errors)
-        except Exception as e:
-            response.set_http_500_response(message=str(e))
-            logger.error(traceback.format_exc())
-        return Response(response.to_json())
+    # 根据action定义
+    def get_serializer_class(self):
+        serializer_class = SysUserSerializer
+        # 新建用户
+        if self.action == 'create':
+            serializer_class = SysUserCreateSerializer
+        # 更新用户信息
+        elif self.action == 'update':
+            serializer_class = SysUserUpdateSerializer
+        return serializer_class
 
-
-class SysUserInfoView(APIView):
-    perms_map = {
-        'delete': ['admin']
-    }
-    permission_classes = [UserRolePermission]
-
-    # 获取用户信息
-    def get(self, request, userName):
-        response = BaseResponse()
-        try:
-            try:
-                user_qs = SysUser.objects.get(username=userName)
-            except SysUser.DoesNotExist:
-                response.set_error_response(code=404, message='用户不存在')
-            else:
-                serializer = SysUserInfoSerializer(user_qs)
-                response.data = serializer.data
-        except Exception as e:
-            response.set_http_500_response(message=str(e))
-            logger.error(traceback.format_exc())
-        return Response(response.to_json())
-
-    # 修改用户信息
-    def put(self, request, userName):
-        response = BaseResponse()
-        try:
-            try:
-                user_qs = SysUser.objects.get(username=userName)
-            except SysUser.DoesNotExist:
-                response.set_error_response(code=500, message='用户不存在')
-            else:
-
-                serializer = SysUserUpdateSerializer(data=request.data, instance=user_qs)
-                if serializer.is_valid():
-                    serializer.save()
-                else:
-                    response.set_error_response(code=500, message=serializer.errors)
-        except Exception as e:
-            response.set_http_500_response(message=str(e))
-            logger.error(traceback.format_exc())
-        return Response(response.to_json())
-
-    # 删除用户
-    def delete(self, request, userName):
-        response = BaseResponse()
-        try:
-            try:
-                user_qs = SysUser.objects.get(username=userName)
-            except SysUser.DoesNotExist:
-                response.set_error_response(code=500, message='用户不存在')
-            else:
-                user_qs.delete()
-        except Exception as e:
-            response.set_http_500_response(message=str(e))
-            logger.error(traceback.format_exc())
-        return Response(response.to_json())
-
-
-class SysUserUsersView(APIView):
-    perms_map = {
-        '*': ['admin']
-    }
-    permission_classes = [UserRolePermission]
-
-    # 获取用户信息列表
-    def get(self, request):
-        response = BaseResponse()
-        try:
-            user_qs = SysUser.objects.all()
-
-            # roleType过滤
-            params = request.GET
-            role_id = params.get('role_id')
-            if role_id:
-                user_qs = user_qs.filter(role_id=role_id)
-            user_qs = user_qs.order_by('id')
-
-            data_list, total = [], user_qs.count()
-            try:
-                page = MyPageNumberPagination()
-                pages_query_set = page.paginate_queryset(queryset=user_qs, request=request, view=self)
-                serializer = SysUserInfoSerializer(instance=pages_query_set, many=True)
-                data_list = serializer.data
-            except NotFound:
-                data_list = []
-            response.data = {
-                'total': total,
-                'rows': data_list
-            }
-        except Exception as e:
-            response.set_http_500_response(message=str(e))
-            logger.error(traceback.format_exc())
-
-        return Response(response.to_json())
-
-    # 批量删除用户
-    def delete(self, request):
-        response = BaseResponse()
-        try:
-            body = request.data
-            try:
-                assert type(body) == list
-            except Exception:
-                response.set_error_response(400, message='参数类型错误')
-            else:
-                SysUser.objects.filter(username__in=body).delete()
-        except Exception as e:
-            response.set_http_500_response(message=str(e))
-            logger.error(traceback.format_exc())
-
-        return Response(response.to_json())
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        params = self.request.GET
+        role_id = params.get('role_id')
+        if role_id:
+            queryset = queryset.filter(role_id=int(role_id))
+        return queryset

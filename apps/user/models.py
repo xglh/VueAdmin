@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from common.base_model import BaseModel
+from common.basic import BaseModel
 
 
 # role_choice = (('admin', 'admin'), ('editor', 'editor'))
@@ -8,8 +8,8 @@ from common.base_model import BaseModel
 
 # 角色表
 class SysRole(BaseModel):
-    role = models.TextField(max_length=255, unique=True, verbose_name='角色')
-    role_name = models.TextField(max_length=255, verbose_name='角色名称')
+    role = models.CharField(max_length=255, unique=True, verbose_name='角色')
+    role_name = models.CharField(max_length=255, verbose_name='角色名称')
 
     class Meta:
         db_table = 'user_sys_role'

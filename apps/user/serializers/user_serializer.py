@@ -19,13 +19,13 @@ class SysUserCreateSerializer(serializers.ModelSerializer):
         UniqueValidator(
             queryset=SysUser.objects.all(),
             message='username已存在'
-        )])
-    password = serializers.CharField(required=True, min_length=6, max_length=24)
-    email = serializers.CharField(max_length=255, default='', allow_blank=True, required=False)
-    phone = serializers.CharField(max_length=255, default='', allow_blank=True, required=False)
-    avatar = serializers.CharField(max_length=255, default='', allow_blank=True, required=False)
-    nick_name = serializers.CharField(max_length=255, default='', allow_blank=True, required=False)
-    role_id = serializers.IntegerField(required=True)
+        )], write_only=True)
+    password = serializers.CharField(required=True, min_length=6, max_length=24, write_only=True)
+    email = serializers.CharField(max_length=255, default='', allow_blank=True, required=False, write_only=True)
+    phone = serializers.CharField(max_length=255, default='', allow_blank=True, required=False, write_only=True)
+    avatar = serializers.CharField(max_length=255, default='', allow_blank=True, required=False, write_only=True)
+    nick_name = serializers.CharField(max_length=255, default='', allow_blank=True, required=False, write_only=True)
+    role_id = serializers.IntegerField(required=True, write_only=True)
 
     class Meta:
         model = SysUser
@@ -47,16 +47,17 @@ class SysUserUpdateSerializer(serializers.ModelSerializer):
     '''
     用户更新序列化
     '''
-    password = serializers.CharField(min_length=6, max_length=24, required=False)
+    password = serializers.CharField(min_length=6, max_length=24, required=False, write_only=True)
     email = serializers.CharField(max_length=255, allow_blank=True, required=False)
     phone = serializers.CharField(max_length=255, allow_blank=True, required=False)
     avatar = serializers.CharField(max_length=255, allow_blank=True, required=False)
     nick_name = serializers.CharField(max_length=255, allow_blank=True, required=False)
-    role_id = serializers.IntegerField(required=False)
+    role_id = serializers.IntegerField(required=False, write_only=True)
+    roles = serializers.SerializerMethodField()
 
     class Meta:
         model = SysUser
-        fields = ('password', 'email', 'phone', 'avatar', 'nick_name', 'role_id')
+        fields = ('password', 'email', 'phone', 'avatar', 'nick_name', 'role_id', 'roles')
 
     def validate_password(self, password):
         if password:
@@ -72,8 +73,14 @@ class SysUserUpdateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('role_id不存在')
         return user_role
 
+    def get_roles(self, obj):
+        roles = []
+        if obj.role_id:
+            roles.append(obj.role_id.role)
+        return roles
 
-class SysUserInfoSerializer(serializers.ModelSerializer):
+
+class SysUserSerializer(serializers.ModelSerializer):
     '''
     用户信息序列化
     '''
@@ -90,4 +97,7 @@ class SysUserInfoSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'email', 'phone', 'roles', 'avatar', 'nick_name')
 
     def get_roles(self, obj):
-        return [obj.role_id.role]
+        roles = []
+        if obj.role_id:
+            roles.append(obj.role_id.role)
+        return roles

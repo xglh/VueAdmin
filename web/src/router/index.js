@@ -151,38 +151,6 @@ export const asyncRoutes = [
         component: () => import('@/views/user/user/index'),
         name: 'user',
         meta: { title: '账号管理', roles: ['admin'] }
-      },
-      {
-        path: 'role-create',
-        component: () => import('@/views/user/role/role-create'),
-        name: 'role-create',
-        hidden: true,
-        props: true,
-        meta: { title: '新增角色', roles: ['admin'] }
-      },
-      {
-        path: 'role-update/:role',
-        component: () => import('@/views/user/role/role-update'),
-        name: 'role-update',
-        hidden: true,
-        props: true,
-        meta: { title: '编辑角色', roles: ['admin'] }
-      },
-      {
-        path: 'user-create',
-        component: () => import('@/views/user/user/user-create'),
-        name: 'user-create',
-        hidden: true,
-        props: true,
-        meta: { title: '新增用户', roles: ['admin'] }
-      },
-      {
-        path: 'user-update/:username',
-        component: () => import('@/views/user/user/user-update'),
-        name: 'user-update',
-        hidden: true,
-        props: true,
-        meta: { title: '编辑用户', roles: ['admin'] }
       }
     ]
   },

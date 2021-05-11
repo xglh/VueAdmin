@@ -1,11 +1,13 @@
-import { login, logout, getUserInfo } from '@/api/user'
+import { login, logout, getUser } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getUserId, setUserId, removeUserId } from '@/utils/auth'
 import { getUserName, setUserName, removeUserName } from '@/utils/auth'
 import { getUserNameUpdate, setUserNameUpdate } from '@/utils/user-update'
 import router, { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
+  userId: 0,
   username: '',
   avatar: '',
   roles: [],
@@ -15,6 +17,9 @@ const state = {
 const mutations = {
   SET_TOKEN: (state, token) => {
     state.token = token
+  },
+  SET_USERID: (state, userId) => {
+    state.userId = userId
   },
   SET_USERNAME: (state, username) => {
     state.username = username
@@ -37,9 +42,12 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
-        commit('SET_TOKEN', data.token)
+        const { userId, username, token } = data
+        commit('SET_TOKEN', token)
+        commit('SET_USERID', userId)
         commit('SET_USERNAME', username)
-        setToken(data.token)
+        setToken(token)
+        setUserId(userId)
         setUserName(username)
         resolve()
       }).catch(error => {
@@ -51,7 +59,7 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getUserInfo(getUserName()).then(response => {
+      getUser(getUserId()).then(response => {
         const { data } = response
 
         if (!data) {
@@ -63,7 +71,6 @@ const actions = {
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles must be a non-null array!')
         }
-        commit('SET_USERNAME', username)
         commit('SET_ROLES', roles)
         commit('SET_AVATAR', avatar)
         resolve(data)
@@ -78,9 +85,11 @@ const actions = {
     return new Promise((resolve, reject) => {
       logout().then(() => {
         commit('SET_TOKEN', '')
+        commit('SET_USERID', 0)
         commit('SET_USERNAME', '')
         commit('SET_ROLES', [])
         removeToken()
+        removeUserId()
         removeUserName()
         resetRouter()
         // reset visited views and cached views
@@ -99,8 +108,10 @@ const actions = {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
       commit('SET_ROLES', [])
+      commit('SET_USERID', 0)
       commit('SET_USERNAME', '')
       removeToken()
+      removeUserId()
       removeUserName()
       resolve()
     })

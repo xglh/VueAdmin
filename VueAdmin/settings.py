@@ -9,9 +9,10 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
-
+import datetime
 import os
 import sys
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
@@ -27,7 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,40 +38,40 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework.authtoken',
+    # 'rest_framework.authtoken',
+    'django_filters',
     'corsheaders',
     'user'
 ]
-
 
 #  新增以下配置  #
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
 # Origin '*' in CORS_ORIGIN_WHITELIST is missing scheme 出现该错误则将其注释掉
 CORS_ORIGIN_WHITELIST = (
-  "*"
+    "*"
 )
 CORS_ALLOW_METHODS = (
-  'DELETE',
-  'GET',
-  'OPTIONS',
-  'PATCH',
-  'POST',
-  'PUT',
-  'VIEW',
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+    'VIEW',
 )
 CORS_ALLOW_HEADERS = (
-  'XMLHttpRequest',
-  'X_FILENAME',
-  'accept-encoding',
-  'authorization',
-  'content-type',
-  'dnt',
-  'origin',
-  'user-agent',
-  'x-csrftoken',
-  'x-requested-with',
-  'Pragma',
+    'XMLHttpRequest',
+    'X_FILENAME',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'Pragma',
 )
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -82,7 +82,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 参数命名转换
+    # 参数驼峰命名转换
     'middlewares.request_params_format.FormatReqParamsMiddleware'
 ]
 
@@ -107,17 +107,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'VueAdmin.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'vueadmin',
+        'USER': 'root',
+        'PASSWORD': 'xglh0901',
+        'HOST': 'localhost',
+        'PORT': '3306'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -138,20 +140,77 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
+    'DEFAULT_PERMISSION_CLASSES': () if DEBUG else
+    (
         'rest_framework.permissions.IsAuthenticated',  # 必须有
     ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+        "rest_framework.authentication.BasicAuthentication",  #
+        "rest_framework.authentication.SessionAuthentication",  #
     ),
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     # 自定义异常处理类
-    'EXCEPTION_HANDLER': (
-        'VueAdmin.exceptions.rest_exception_handler'
-    )
+    'EXCEPTION_HANDLER': 'apps.common.custom.rest_exception_handler',
 }
-
+# jwt载荷中的有效期设置
+JWT_AUTH = {
+    # token 有效期
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=24),
+    "JWT_AUTH_HEADER_PREFIX": "jwt",
+    # 刷新token
+    'JWT_ALLOW_REFRESH': True,
+}
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
+
+# 日志
+BASE_LOG_DIR = os.path.join(BASE_DIR, "logs")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": '%(asctime)s %(filename)s %(lineno)s %(levelname)s  %(message)s'
+        },
+        "simple": {"format": "%(levelname)s %(asctime)s %(message)s"},
+    },
+    "handlers": {
+        "default": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_LOG_DIR, "vue_admin.log"),
+            "maxBytes": 1024 * 1024 * 50,
+            "backupCount": 3,
+            "formatter": "simple",
+            "encoding": "utf-8",
+        },
+        "error": {
+            "level": "ERROR",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_LOG_DIR, "vue_admin.log"),
+            "backupCount": 5,
+            "formatter": "standard",
+            "encoding": "utf-8",
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard'
+        },
+
+    },
+    "loggers": {
+        "info": {"handlers": ["default"], "level": "INFO", "propagate": True},
+        "warn": {"handlers": ["default"], "level": "WARNING", "propagate": True},
+        "error": {"handlers": ["error"], "level": "ERROR"},
+        "celery": {"handlers": ["default"], "level": "DEBUG"},
+        'mylogger': {
+            'handlers': ['default', 'console'],
+            'level': 'INFO'
+        }
+    },
+}
 
 LANGUAGE_CODE = 'zh-hans'
 
@@ -163,13 +222,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
 # 自定义user表
 AUTH_USER_MODEL = "user.SysUser"
-# AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend')
-# token过期时间
-REST_FRAMEWORK_TOKEN_EXPIRE_MINUTES = 60 * 24
